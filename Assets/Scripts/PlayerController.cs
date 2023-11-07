@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
+
+[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(TrailRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(PlatformerController2D))]
@@ -11,6 +13,13 @@ public class PlayerController : MonoBehaviour
 {
 
     public static PlayerController Player { get; private set; }
+
+    private SpriteRenderer spriteRenderer;
+
+    public AudioSource source;
+    
+    public AudioClip jumpSound;
+    public AudioClip dashSound;
 
     public bool visualiserOn = true;
 
@@ -29,20 +38,23 @@ public class PlayerController : MonoBehaviour
     private bool jumpInput;
     private int maxJumps = 2;
     private int jumpsLeft;
-    public float jumpSpeed = 8f;
+    public float jumpSpeed = 100f;
     private bool jumpReleaseInput;
-    public float normalGravityModifier;
-    public float releaseGravityModifier;
-    public float baseGravityScale;
+
+    [Header("Airtime settings")]
+    public float normalGravityModifier = 1.2f;
+    public float releaseGravityModifier = 3f;
+    public float baseGravityScale = 2.5f;
+    public float hangtimeGravity = 0.1f;
 
 
     
     [Header("Movement")]
-    public float inputTreshold = 0.015f;
-    public float runMaxSpeed; //Target speed we want the player to reach.
-    public float runAcceleration; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
+    public float inputTreshold = 0.4f;
+    public float runMaxSpeed = 8f; //Target speed we want the player to reach.
+    public float runAcceleration = 8f; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
     [HideInInspector] public float runAccelAmount; //The actual force (multiplied with speedDiff) applied to the player.
-    public float runDecceleration; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0.
+    public float runDecceleration = 0.5f; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0.
     [HideInInspector] public float runDeccelAmount; //Actual force (multiplied with speedDiff) applied to the player .
     [Space(10)]
     [Range(0.01f, 1)] public float accelInAir; //Multipliers applied to acceleration rate when airborne.
@@ -51,32 +63,85 @@ public class PlayerController : MonoBehaviour
     private float horizontalMovementInputRaw;
     private float horizontalMovementInput;
 
-    private bool isFacingRight;
+    float dir = -1; // Ensimmainen suunta on vasemmalle
 
 
     [Header("Dash")]
-    public float dashWait = 0.5f;
-    public float dashSpeed = 8f;
-    public float dashVerticalSpeed = 1f;
     private bool dashInput;
-    private bool isDashing;
+    public float dashingTime = 0.25f;
+    public float dashingCooldown = 0.7f;
+    public float dashPower = 8000f;
+    private bool isDashing = false;
+    private bool canDash = true;
 
 
     [Header("Wall Climb")]
-    public float WallclimbSpeed;
-    private bool isWallClimbing;
+    public float WallclimbSpeed = 3f;
     private bool VerticalMovementInput;
-    public float wallJumpAngle = 30f;
-    public float baseWallJumpSpeed = 10f;
-    public float extraWallJumpSpeed = 10f;
+    public float wallJumpAngle = 25f;
+    public float baseWallJumpSpeed = 60f;
+    public float extraWallJumpSpeed = 20f;
     Vector2 wallJumpSpeedVector;
+    private bool isWallClimbing;
+    private bool isClimbingCorner = false;
 
 
+
+    [Header("Animations")]
+    Animator animator;
+    private string currentState;
+    public AnimationClip PLAYER_IDLE_ASSIGN;
+    private string PLAYER_IDLE;
+
+    public AnimationClip PLAYER_WALK_ASSIGN;
+    private string PLAYER_WALK;
+
+    public AnimationClip PLAYER_JUMP_ASSIGN;
+    private string PLAYER_JUMP;
+
+    public AnimationClip PLAYER_AIRTIME_ASSIGN;
+    private string PLAYER_AIRTIME;
+
+    public AnimationClip PLAYER_FALL_ASSIGN;
+    private string PLAYER_FALL;
+
+    public AnimationClip PLAYER_LAND_ASSIGN;
+    private string PLAYER_LAND;
+
+    public AnimationClip PLAYER_SLIDE_ASSIGN;
+    private string PLAYER_SLIDE;
+
+    public AnimationClip PLAYER_CLIMB_ASSIGN;
+    private string PLAYER_CLIMB;
+
+    public AnimationClip PLAYER_DASH_ASSIGN;
+    private string PLAYER_DASH;
+
+    public AnimationClip PLAYER_SLIDE_GROUND_MIDDLE_ASSIGN;
+    private string PLAYER_SLIDE_GROUND_MIDDLE;
+
+    public AnimationClip PLAYER_SLIDE_GROUND_START_ASSIGN;
+    private string PLAYER_SLIDE_GROUND_START;
+
+    public AnimationClip PLAYER_SLIDE_GROUND_END_ASSIGN;
+    private string PLAYER_SLIDE_GROUND_END;
+
+    public AnimationClip PLAYER_CORNER_ASSIGN;
+    private string PLAYER_CORNER;
+
+    [SerializeField]
+    private Vector2 offset1;
+    [SerializeField] 
+    private Vector2 offset2;
+
+    private Vector2 climbBegunPosition;
+    private Vector2 climbOverPosition;
+
+    private bool canGrabLedge = true;
+    private bool canClimbCorner = false;
+
+    private AnimationEvents animationEvents;
     
-
-    // time passed, timer start when the game starts
-    float timePassed = 0f;
-
 
     #endregion
 
@@ -95,6 +160,7 @@ public class PlayerController : MonoBehaviour
     // Kun Peli alkaa niin laske ja aseta muuttujat
     void Start()
     {
+        
         SetVariables();
         Calculations();
     }
@@ -102,21 +168,26 @@ public class PlayerController : MonoBehaviour
     // Tanne kaikki inputtaamiseen liittyvat funktiot
     void Update()
     {
+        //Debug.Log(" top collission: " + col.collisions.top + " bottom collision: " + col.collisions.bottom);
         FollowInputs();
-
-        
+        //Debug.Log("Can grab ledge: " + canGrabLedge);
     }
 
     // Tänne kaikki fysiikkaan liittyvat funktiot
     private void FixedUpdate()
     {
+
+        checkForLedge();
+
+        ClimbOverLedge();
+
+        if (isClimbingCorner || isDashing) return;
+
         Move();
 
         Wallclimb();
 
         Jump();
-
-        InAir();
 
         ResetLeftJumps();
 
@@ -124,42 +195,102 @@ public class PlayerController : MonoBehaviour
 
         Dash();
 
-        Deaccelerate();
-
-        CheckDir();
+        ModifyGravity();
 
         DeaccelerateAfterSpaceLift();
 
-        if (isGrounded())
-        {
-            rb.gravityScale = baseGravityScale;
-            trail.enabled = false;
-        }
-            
-
-        Calculations();
-
-        //isTouchingJumpingPlatform();
+        
 
     }
 
+    void ChangeAnimationState(string newState)
+    {
+        if (currentState == newState) return;
 
+        animator.Play(newState);
+
+        currentState = newState;
+    }
+
+
+
+    private void checkForLedge()
+    {
+        Debug.Log(col.collisions.top + " " + col.collisions.bottom);
+
+        if (col.collisions.top == false && col.collisions.bottom == true && canGrabLedge && rb.velocity.y > 0)
+        {
+            Debug.Log("Im here");
+            rb.velocity = Vector2.zero;
+            rb.gravityScale = 0;
+            //Debug.Log("Imgere");
+            canGrabLedge = false;
+            isClimbingCorner = true;
+
+            Vector2 ledgePosition = transform.position;
+            climbBegunPosition = ledgePosition + offset1;
+            climbOverPosition = new Vector2(ledgePosition.x + (offset2.x*dir), ledgePosition.y + offset2.y);
+                
+            transform.position = climbBegunPosition;
+            ChangeAnimationState(PLAYER_CORNER);
+ 
+
+
+            
+        }
+    }
+
+    private void ClimbOverLedge()
+    {
+        if (!animationEvents.evtClimbOver) return;
+
+        //Debug.Log(climbOverPosition);
+        transform.position = climbOverPosition;
+        rb.gravityScale = baseGravityScale;
+        isClimbingCorner = false;
+        animationEvents.evtClimbOver = false;
+
+        Invoke("CanGrabLedge", .4f);
+    }
+
+    private void CanGrabLedge() => canGrabLedge = true;
 
     #region Move
 
     private void Move()
     {
-        if (Mathf.Abs(horizontalMovementInputRaw) < inputTreshold || isDashing == true  || isWallClimbing == true)
+        if (Mathf.Abs(horizontalMovementInputRaw) < inputTreshold || isWallClimbing == true) 
         {
             horizontalMovementInput = 0;
-            return;
-        }
+            
+            if (isGrounded() && isDashing == false)
+            {
+                if (Mathf.Abs(rb.velocity.x) <= 3)
+                    ChangeAnimationState(PLAYER_IDLE);
+                else
+                    ChangeAnimationState(PLAYER_SLIDE_GROUND_START);       
+            }
+            return; 
+        } // jos input ei ole kovempaa kuin treshold niin resettaa input 0, jos dashaat tai kiipeat niin palaa
+
+        if (isGrounded() && isDashing == false)
+            ChangeAnimationState(PLAYER_WALK);
+
+        dir = (horizontalMovementInput < inputTreshold) ? -1 : (horizontalMovementInput > inputTreshold ? 1 : 0);
 
         //Calculate the direction we want to move in and our desired velocity
-        float targetSpeed = horizontalMovementInput * runMaxSpeed;
+        float targetSpeed = dir * runMaxSpeed;
+
+
+        if (dir == -1)
+            spriteRenderer.flipX = false;
+        else
+            spriteRenderer.flipX = true;
+            
+
 
         #region Calculate AccelRate
-        float accelRate = 0;
+        float accelRate = 1;
 
         //Gets an acceleration value based on if we are accelerating (includes turning) 
         //or trying to decelerate (stop). As well as applying a multiplier if we're air borne.
@@ -169,35 +300,12 @@ public class PlayerController : MonoBehaviour
             accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? runAccelAmount * accelInAir : runDeccelAmount * deccelInAir;
         #endregion
 
-        //Not used since no jump implemented here, but may be useful if you plan to implement your own
-        /* 
-		#region Add Bonus Jump Apex Acceleration
-		//Increase are acceleration and maxSpeed when at the apex of their jump, makes the jump feel a bit more bouncy, responsive and natural
-		if ((IsJumping || IsWallJumping || _isJumpFalling) && Mathf.Abs(RB.velocity.y) < Data.jumpHangTimeThreshold)
-		{
-			accelRate *= Data.jumpHangAccelerationMult;
-			targetSpeed *= Data.jumpHangMaxSpeedMult;
-		}
-		#endregion
-		*/
 
-        #region Conserve Momentum
-        //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
-        if (doConserveMomentum && Mathf.Abs(rb.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && isGrounded() == false)
-        {
-
-            // && LastOnGroundTime < 0 test this in the last part of if statement
-
-            //Prevent any deceleration from happening, or in other words conserve are current momentum
-            //You could experiment with allowing for the player to slightly increae their speed whilst in this "state"
-            accelRate = 0;
-        }
-        #endregion
 
         //Calculate difference between current velocity and desired velocity
         float speedDif = targetSpeed - rb.velocity.x;
-        //Calculate force along x-axis to apply to thr player
 
+        //Calculate force along x-axis to apply to thr player
         float movement = speedDif * accelRate;
 
         //Convert this to a vector and apply to rigidbody
@@ -209,49 +317,41 @@ public class PlayerController : MonoBehaviour
 		 * Time.fixedDeltaTime is by default in Unity 0.02 seconds equal to 50 FixedUpdate() calls per second
 		*/
 
-        // applies force to a rigidbody
-        //rb.AddForce(movement * Vector2.right);
-
-
-
     } // function
 
-    
 
-    private void Dash()
+
+    private IEnumerator Dash()
     {
-        if (dashInput == false) return;
-        if (isDashing) Debug.Log("I'm dashing " + isDashing);
+        canDash = false;
+        isDashing = true;
+        source.PlayOneShot(dashSound);
+        ChangeAnimationState(PLAYER_DASH);
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.AddForce(new Vector2(dir * dashPower, 1000f));
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        yield return new WaitForSeconds(dashingTime);
+        rb.gravityScale = originalGravity;
+        rb.velocity = new Vector2(rb.velocity.x / 2, rb.velocity.y);
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
 
+        
 
-        StartCoroutine(DashWait(dashWait));
-
-
-        IEnumerator DashWait(float wait)
-        {
-            isDashing = true;
-
-            rb.AddForce(new Vector2(horizontalMovementInput * dashSpeed, dashVerticalSpeed), ForceMode2D.Impulse);
-
-            yield return new WaitForSeconds(wait/2);
-
-            isDashing = false;
-            dashInput = false;
-            rb.velocity = new Vector2(0, rb.velocity.y);
-
-            yield return new WaitForSeconds(wait/2);
-
-        } // IEnumerator 
-    } // function
+    } // IEnumerator
 
     private void Jump()
     {
-        if (TouchingWall() == true) return; // if touches wall cant do normal jump
-        if (jumpInput == false) return;
-        if (isGrounded() == false && jumpsLeft <= 1) return; // Jos oot ilmassa ja ei oo hyppyja jaljella palaa tai et paina hyppynappia
+        if (jumpInput == false) return; // jos et ole painanut jump inputtia et voi hyppaa
+        if (isDashing == true || isWallClimbing == true) return; // jos dashaat et voi hypätä tai kavelet seinaa et voi tehda normaalia hyppya
+        if (isGrounded() == false && jumpsLeft <= 1) return; // Jos oot ilmassa ja ei oo hyppyja jaljella palaa
 
         rb.velocity = new Vector2(rb.velocity.x, 0f);
 
+        ChangeAnimationState(PLAYER_JUMP);
+        source.PlayOneShot(jumpSound);
 
         jumpsLeft--;
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
@@ -260,33 +360,52 @@ public class PlayerController : MonoBehaviour
 
     }  // function
 
-    private void Deaccelerate()
+    private void ModifyGravity()
     {
-        if (isGrounded() == true) { rb.gravityScale = baseGravityScale; return; }
-        if (TouchingWall() == true) { rb.gravityScale = baseGravityScale; return; }
+        if (isGrounded() == true) { rb.gravityScale = baseGravityScale; return; }  // jos olet maassa gravitaatio voima on normaali
+        if (TouchingWall() == true) { rb.gravityScale = baseGravityScale; return; } // jos olet ilmassa gravitaatio voima on normaali
+        if (isClimbingCorner == true) return;
 
+        trail.enabled = true;
 
-        if (rb.velocity.y < 0)
+        if (rb.velocity.y > -3 && rb.velocity.y < 3)
+        {
+            
+            rb.gravityScale = baseGravityScale * hangtimeGravity;
+
+            if (isDashing != true)
+                ChangeAnimationState(PLAYER_AIRTIME);
+
+            return;
+        }
+            
+
+        if (rb.velocity.y <= -3)
+        {
+            
             rb.gravityScale = baseGravityScale * normalGravityModifier;
+
+            if (isDashing != true)
+                ChangeAnimationState(PLAYER_FALL);
+
+            return;
+        }
     }  // function
 
 
     private void DeaccelerateAfterSpaceLift()
     {
-        if (TouchingWall() == true) { rb.gravityScale = baseGravityScale; return; }
+        if (TouchingWall() == true || jumpReleaseInput == false) 
+        { rb.gravityScale = baseGravityScale; jumpReleaseInput = false; return; }
         if (isGrounded() == true || jumpReleaseInput == false)
         { rb.gravityScale = baseGravityScale; jumpReleaseInput = false; return; }
 
         rb.gravityScale = baseGravityScale * releaseGravityModifier;
-
-
-
-
     }  // function
+
 
     private void ResetLeftJumps()
     {
-        if (TouchingWall() == true) return; // jos kosketat seinää älä resettaa hyppyä
         if (isGrounded() == false) return;  // jos sä oot maassa niin resettaa hyppy määrät normaaliksi
 
         jumpsLeft = maxJumps;
@@ -295,33 +414,36 @@ public class PlayerController : MonoBehaviour
 
 
 
-    private void InAir()
-    {
-        if (isGrounded() == true) return;
-        trail.enabled = true;
-
-    }
-
 
     // wallclimb
     private void Wallclimb()
     {
         if (isGrounded() == true) return;
         if (TouchingWall() == false) return;
-
+        if (rb.velocity.y >= 1f && isWallClimbing == false) return;
+        
         if (visualiserOn)
             visualizeWallJump();
+
+        trail.enabled = false;
+
+        
 
         // implimentaatio
         isWallClimbing = true;
 
+
         if (VerticalMovementInput)
+        {
+            ChangeAnimationState(PLAYER_CLIMB);
             rb.velocity = Vector2.up * WallclimbSpeed;
+        }
         else
-            rb.velocity = Vector2.up;
-
-
-
+        {
+            rb.velocity = Vector2.zero;
+            ChangeAnimationState(PLAYER_SLIDE);
+        }
+            
     } // function
 
 
@@ -329,12 +451,11 @@ public class PlayerController : MonoBehaviour
     // walljump
     private void WallJump()
     {
-        if (TouchingWall() == false) return; // jos osut seinään ja jump on true  (false || false)  (true && true)
         if (jumpInput == false) return;
+        if (TouchingWall() == false) return; // jos osut seinään ja jump on true  (false || false)  (true && true)
+        
 
         isWallClimbing = false;
-
-        float dir = isFacingRight ? 1 : -1;
 
         float wallJumpSpeedXvector;
         float wallJumpSpeedYvector;
@@ -349,41 +470,16 @@ public class PlayerController : MonoBehaviour
 
 
         jumpInput = false;
-
     }  // function
 
-    private void CheckDir()
-    {
-
-
-        if (horizontalMovementInput > 0)
-            isFacingRight = true;
-
-        if (horizontalMovementInput < 0)
-            isFacingRight = false;
-    }
 
 
     #endregion
 
 
-    private void TimedVariableUpdates()
-    {
-        timePassed += Time.deltaTime;
-        if (timePassed > 2f)
-        {
-            timePassed = 0f;
 
-            //Debug.Log("Horizontal raw movement input is: " + horizontalMovementInputRaw);
-            //Debug.Log("Horizontal movement input is: " + horizontalMovementInput);
-            //Debug.Log("Acceleration is: " + acceleration);
-            //Debug.Log("Current speed is: " + currentSpeed);
-            //Debug.Log("Current runtime is: " + runTime);
-            //Debug.Log("Current jumps left: " + jumpsLeft);
 
-        } // if
-    } // function
-
+    #region Setup
 
     private void Calculations()
     {
@@ -398,10 +494,54 @@ public class PlayerController : MonoBehaviour
 
     private void SetVariables()
     {
+        animator = GetComponentInChildren<Animator>();
         trail = GetComponent<TrailRenderer>();
         rb = GetComponent<Rigidbody2D>();
         bc = GetComponent<BoxCollider2D>();
         col = GetComponent<PlatformerController2D>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+
+
+
+        Debug.Log("wtf why is this not triggering");
+
+        //evtLedgeOver = new AnimationEvent();
+        //evtLedgeOver.intParameter = 12123;
+        //evtLedgeOver.time = 0.5f;
+        //evtLedgeOver.functionName = "LedgeClimbOver";
+
+        //animator = GetComponent<Animator>();
+
+        //foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
+        //{
+        //    if (clip.name == "player-corner-climb-2")
+        //    {
+        //        clip.AddEvent(evtLedgeOver);
+
+        //        Debug.Log("I added animation event");
+        //    }
+        //}
+
+        animationEvents = GetComponentInChildren<AnimationEvents>();
+
+
+        PLAYER_IDLE = PLAYER_IDLE_ASSIGN.name;
+        PLAYER_WALK = PLAYER_WALK_ASSIGN.name;
+        PLAYER_JUMP = PLAYER_JUMP_ASSIGN.name;
+        PLAYER_AIRTIME = PLAYER_AIRTIME_ASSIGN.name;
+        PLAYER_FALL = PLAYER_FALL_ASSIGN.name;
+        PLAYER_DASH = PLAYER_DASH_ASSIGN.name;
+        PLAYER_CLIMB = PLAYER_CLIMB_ASSIGN.name;
+        PLAYER_SLIDE = PLAYER_SLIDE_ASSIGN.name;
+        PLAYER_SLIDE_GROUND_MIDDLE = PLAYER_SLIDE_GROUND_MIDDLE_ASSIGN.name;
+        PLAYER_SLIDE_GROUND_START = PLAYER_SLIDE_GROUND_START_ASSIGN.name;
+        PLAYER_SLIDE_GROUND_END = PLAYER_SLIDE_GROUND_END_ASSIGN.name;
+        PLAYER_CORNER = PLAYER_CORNER_ASSIGN.name;
+
+
+
+        //trail.SetPosition(1, new Vector3(transform.position.x, transform.position.y - bc.size.y/2, 0));
         isDashing = false;
         isWallClimbing = false;
         jumpInput = false;
@@ -410,48 +550,18 @@ public class PlayerController : MonoBehaviour
         horizontalMovementInput = 0;
 
         JumpingLayerMask = LayerMask.GetMask("JumpingPlatform");
-       
-    }
-
-    private void FollowInputs()
-    {
-        horizontalMovementInputRaw = Input.GetAxis("Horizontal");
-
-        if (horizontalMovementInputRaw != 0)
-            horizontalMovementInput = horizontalMovementInputRaw;
-
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            VerticalMovementInput = true;
-
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow))
-            VerticalMovementInput = false;
-
-
-        if (Input.GetKeyDown(KeyCode.X) == true)
-            dashInput = true;
-
-
-        if (Input.GetKeyDown(KeyCode.Space) == true)
-            jumpInput = true;
-
-
-        if (Input.GetKeyUp(KeyCode.Space))
-            jumpReleaseInput = true;
-
 
     }
 
+    #endregion
 
 
-    private void OnDrawGizmos()
-    {
-
-    }
+    #region Visualisation
 
     private void visualizeWallJump()
     {
 
-        float dir = isFacingRight ? 1 : -1;
+        //float dir = isFacingRight ? 1 : -1;
 
         float wallJumpSpeedXvector;
         float wallJumpSpeedYvector;
@@ -471,15 +581,49 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    public void TestHello()
+
+    #endregion // vain debuggaukseen
+
+
+    #region FollowedValues
+
+    private void FollowInputs()
     {
-        Debug.Log("Hellou man");
+
+        if (isClimbingCorner) return;
+
+        horizontalMovementInputRaw = Input.GetAxis("Horizontal");
+
+        if (horizontalMovementInputRaw != 0)
+            horizontalMovementInput = horizontalMovementInputRaw;
+
+        
+
+        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetAxis("Vertical") > 0)
+            VerticalMovementInput = true;
+
+        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.UpArrow) || Input.GetAxis("Vertical") <= 0)
+            VerticalMovementInput = false;
+
+
+        if (Input.GetKeyDown(KeyCode.X) == true || Input.GetKeyDown(KeyCode.Mouse0) == true || Input.GetAxisRaw("Dash") > 0 && TouchingWall() == false && canDash == true)
+            StartCoroutine(Dash());
+
+
+        if (Input.GetKeyDown(KeyCode.Space) == true || Input.GetButtonDown("Jump"))
+            jumpInput = true;
+
+
+        if (Input.GetKeyUp(KeyCode.Space) || Input.GetButtonUp("Jump"))
+            jumpReleaseInput = true;
+
+
     }
 
-    private bool isGrounded()
+    public bool isGrounded()
     {
-        float extraVerticalHeight = .4f;
-        float extraHorizontalHeight = .2f;
+        float extraVerticalHeight = .15f;
+        float extraHorizontalHeight = .08f;
 
 
         col.VerticalRaycasts(bc, collisionLayer, extraVerticalHeight, extraHorizontalHeight);
@@ -496,8 +640,8 @@ public class PlayerController : MonoBehaviour
             Debug.DrawRay(new Vector3(bc.bounds.center.x - bc.bounds.size.x / 2 - extraHorizontalHeight, bc.bounds.center.y, 0), Vector2.down * (bc.bounds.extents.y + extraVerticalHeight), Color.green);
             Debug.DrawRay(new Vector3(bc.bounds.center.x + bc.bounds.size.x / 2 + extraHorizontalHeight, bc.bounds.center.y, 0), Vector2.down * (bc.bounds.extents.y + extraVerticalHeight), Color.green);
             isWallClimbing = false;
-
-            Debug.Log("Why isnt it working");
+            rb.gravityScale = baseGravityScale;
+            trail.enabled = false;
             return true;
         } // if
 
@@ -505,37 +649,20 @@ public class PlayerController : MonoBehaviour
 
 
 
-    private bool TouchingWall()
+    public bool TouchingWall()
     {
         if (isGrounded() == true) return false;
-        // you need to do this wall raycast better man
+        
 
-        float extraHeight = .4f;
+        float extraHeight = .16f;
 
-        float vectorDir;
-
-
-        if (isFacingRight)
-            vectorDir = 1;
-        else
-            vectorDir = -1;
-
-
-        col.HorizontalRaycasts(vectorDir, bc, collisionLayer, extraHeight);
-
-
-
-        //Debug.Log(vectorDir);
-
-
-
-
+        col.HorizontalRaycasts(dir, bc, collisionLayer, extraHeight);
 
 
         if (col.collisions.top == false && col.collisions.bottom == false)
         {
             if (visualiserOn)
-                col.visualizeHorizontalRaysFalse(bc, isFacingRight, extraHeight);
+                col.visualizeHorizontalRaysFalse(bc, dir, extraHeight);
 
             isWallClimbing = false;
             return false;
@@ -543,10 +670,14 @@ public class PlayerController : MonoBehaviour
         else
         {
             if (visualiserOn)
-                col.visualizeHorizontalRaysTrue(bc, isFacingRight, extraHeight);
+                col.visualizeHorizontalRaysTrue(bc, dir, extraHeight);
+            jumpsLeft = maxJumps;
             return true;
         } // if
     } // function
+    #endregion
+
+
 
 
 } // class

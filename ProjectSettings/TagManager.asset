@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - nonClimbable
   layers:
   - Default
   - TransparentFX
@@ -11,7 +12,7 @@ TagManager:
   - Land
   - Water
   - UI
-  - JumpingPlatform
+  - SlippySides
   - 
   - 
   - 
@@ -35,7 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - bg-30
   - 
   m_SortingLayers:
   - name: Default
