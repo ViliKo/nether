@@ -30,7 +30,7 @@ public class PlatformerController2D : MonoBehaviour
             Color.green);
 
         Debug.DrawRay(
-            new Vector3(bc.bounds.center.x, bc.bounds.center.y, 0),
+            new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
             wallraycast * (bc.bounds.extents.x + extraHeight),
             Color.green);
     }
@@ -53,7 +53,7 @@ public class PlatformerController2D : MonoBehaviour
             Color.red);
 
         Debug.DrawRay(
-            new Vector3(bc.bounds.center.x, bc.bounds.center.y, 0),
+            new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
             wallraycast * (bc.bounds.extents.x + extraHeight),
             Color.red);
     }
@@ -121,7 +121,7 @@ public class PlatformerController2D : MonoBehaviour
 
 
         RaycastHit2D hitBottom = Physics2D.Raycast(
-            new Vector3(bc.bounds.center.x, bc.bounds.center.y, 0),
+            new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
             wallraycast,
             bc.bounds.extents.x + extraHeight,
             collisionLayer);

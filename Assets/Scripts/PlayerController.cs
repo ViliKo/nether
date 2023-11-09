@@ -20,6 +20,12 @@ public class PlayerController : MonoBehaviour
     
     public AudioClip jumpSound;
     public AudioClip dashSound;
+    public AudioClip idleSound;
+    public AudioClip runSound;
+    public AudioClip slideSound;
+    public AudioClip wallclimbSound;
+    public AudioClip wallslideSound;
+    private string currentAudioState;
 
     public bool visualiserOn = true;
 
@@ -138,7 +144,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 climbOverPosition;
 
     private bool canGrabLedge = true;
-    private bool canClimbCorner = false;
+    private bool hasLanded = false;
 
     private AnimationEvents animationEvents;
     
@@ -171,6 +177,8 @@ public class PlayerController : MonoBehaviour
         //Debug.Log(" top collission: " + col.collisions.top + " bottom collision: " + col.collisions.bottom);
         FollowInputs();
         //Debug.Log("Can grab ledge: " + canGrabLedge);
+
+        
     }
 
     // Tänne kaikki fysiikkaan liittyvat funktiot
@@ -199,7 +207,7 @@ public class PlayerController : MonoBehaviour
 
         DeaccelerateAfterSpaceLift();
 
-        
+        AirLanding();
 
     }
 
@@ -212,6 +220,20 @@ public class PlayerController : MonoBehaviour
         currentState = newState;
     }
 
+    void ChangeSoundState(AudioClip audioState, float volume, bool isLooping, bool overide = false)
+    {
+        Debug.Log("Current state: " + currentAudioState + " New state: " + audioState.name);
+        if (currentAudioState == audioState.name && !overide) return;
+        source.Stop();
+        source.clip = audioState;
+        source.volume = volume;
+        source.loop = isLooping;
+        source.Play();
+        currentAudioState = audioState.name;
+        
+
+    }
+
 
 
     private void checkForLedge()
@@ -220,19 +242,20 @@ public class PlayerController : MonoBehaviour
 
         if (col.collisions.top == false && col.collisions.bottom == true && canGrabLedge && rb.velocity.y > 0)
         {
-            Debug.Log("Im here");
+            isClimbingCorner = true;
+            canGrabLedge = false;
             rb.velocity = Vector2.zero;
             rb.gravityScale = 0;
             //Debug.Log("Imgere");
-            canGrabLedge = false;
-            isClimbingCorner = true;
+            
+            
 
             Vector2 ledgePosition = transform.position;
             climbBegunPosition = ledgePosition + offset1;
             climbOverPosition = new Vector2(ledgePosition.x + (offset2.x*dir), ledgePosition.y + offset2.y);
                 
             transform.position = climbBegunPosition;
-            ChangeAnimationState(PLAYER_CORNER);
+            ChangeAnimationState(PLAYER_CORNER); // Tässä animaatiossa on tapahtuma, joka laukaisee alla olevan funktion
  
 
 
@@ -266,15 +289,28 @@ public class PlayerController : MonoBehaviour
             if (isGrounded() && isDashing == false)
             {
                 if (Mathf.Abs(rb.velocity.x) <= 3)
+                {
                     ChangeAnimationState(PLAYER_IDLE);
+                    ChangeSoundState(idleSound, .1f, true);
+                }
+                    
                 else
-                    ChangeAnimationState(PLAYER_SLIDE_GROUND_START);       
+                {
+                    ChangeAnimationState(PLAYER_SLIDE_GROUND_START);
+                    ChangeSoundState(slideSound, .1f, false);
+                }
+                           
             }
             return; 
         } // jos input ei ole kovempaa kuin treshold niin resettaa input 0, jos dashaat tai kiipeat niin palaa
 
         if (isGrounded() && isDashing == false)
+        {
             ChangeAnimationState(PLAYER_WALK);
+            ChangeSoundState(runSound, 1f, true);
+
+        }
+            
 
         dir = (horizontalMovementInput < inputTreshold) ? -1 : (horizontalMovementInput > inputTreshold ? 1 : 0);
 
@@ -325,7 +361,7 @@ public class PlayerController : MonoBehaviour
     {
         canDash = false;
         isDashing = true;
-        source.PlayOneShot(dashSound);
+        ChangeSoundState(dashSound, 1f, false, true);
         ChangeAnimationState(PLAYER_DASH);
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0f;
@@ -333,7 +369,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(rb.velocity.x, 0);
         yield return new WaitForSeconds(dashingTime);
         rb.gravityScale = originalGravity;
-        rb.velocity = new Vector2(rb.velocity.x / 2, rb.velocity.y);
+        rb.velocity = new Vector2(rb.velocity.x / 2, 0);
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         canDash = true;
@@ -351,7 +387,7 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector2(rb.velocity.x, 0f);
 
         ChangeAnimationState(PLAYER_JUMP);
-        source.PlayOneShot(jumpSound);
+        ChangeSoundState(jumpSound, 1f, false, true);
 
         jumpsLeft--;
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
@@ -359,6 +395,22 @@ public class PlayerController : MonoBehaviour
         jumpInput = false;
 
     }  // function
+
+    private void AirLanding()
+    {
+        if (!isGrounded()) { hasLanded = false; return; };
+        
+        if(!hasLanded)
+        {
+            Debug.Log("I have landed");
+            hasLanded = true;
+        }
+
+        
+
+
+
+    }
 
     private void ModifyGravity()
     {
@@ -418,9 +470,8 @@ public class PlayerController : MonoBehaviour
     // wallclimb
     private void Wallclimb()
     {
-        if (isGrounded() == true) return;
-        if (TouchingWall() == false) return;
-        if (rb.velocity.y >= 1f && isWallClimbing == false) return;
+        if (isGrounded()) return;
+        if (!TouchingWall()) return;
         
         if (visualiserOn)
             visualizeWallJump();
@@ -436,12 +487,14 @@ public class PlayerController : MonoBehaviour
         if (VerticalMovementInput)
         {
             ChangeAnimationState(PLAYER_CLIMB);
+            ChangeSoundState(wallclimbSound, 1.2f, true);
             rb.velocity = Vector2.up * WallclimbSpeed;
         }
         else
         {
             rb.velocity = Vector2.zero;
             ChangeAnimationState(PLAYER_SLIDE);
+            ChangeSoundState(wallslideSound, .2f, true);
         }
             
     } // function
@@ -453,7 +506,8 @@ public class PlayerController : MonoBehaviour
     {
         if (jumpInput == false) return;
         if (TouchingWall() == false) return; // jos osut seinään ja jump on true  (false || false)  (true && true)
-        
+
+        ChangeSoundState(jumpSound, 1f, false);
 
         isWallClimbing = false;
 
@@ -504,24 +558,6 @@ public class PlayerController : MonoBehaviour
 
 
 
-        Debug.Log("wtf why is this not triggering");
-
-        //evtLedgeOver = new AnimationEvent();
-        //evtLedgeOver.intParameter = 12123;
-        //evtLedgeOver.time = 0.5f;
-        //evtLedgeOver.functionName = "LedgeClimbOver";
-
-        //animator = GetComponent<Animator>();
-
-        //foreach (AnimationClip clip in animator.runtimeAnimatorController.animationClips)
-        //{
-        //    if (clip.name == "player-corner-climb-2")
-        //    {
-        //        clip.AddEvent(evtLedgeOver);
-
-        //        Debug.Log("I added animation event");
-        //    }
-        //}
 
         animationEvents = GetComponentInChildren<AnimationEvents>();
 
@@ -561,7 +597,6 @@ public class PlayerController : MonoBehaviour
     private void visualizeWallJump()
     {
 
-        //float dir = isFacingRight ? 1 : -1;
 
         float wallJumpSpeedXvector;
         float wallJumpSpeedYvector;
@@ -606,8 +641,17 @@ public class PlayerController : MonoBehaviour
             VerticalMovementInput = false;
 
 
-        if (Input.GetKeyDown(KeyCode.X) == true || Input.GetKeyDown(KeyCode.Mouse0) == true || Input.GetAxisRaw("Dash") > 0 && TouchingWall() == false && canDash == true)
-            StartCoroutine(Dash());
+        
+        if (!TouchingWall() && canGrabLedge)
+        {
+            if ((Input.GetKeyDown(KeyCode.X) == true || Input.GetKeyDown(KeyCode.Mouse0) == true || Input.GetAxisRaw("Dash") > 0) && canDash == true)
+            {
+                Debug.Log("I'm touching wall" + TouchingWall());
+                StartCoroutine(Dash());
+            }
+        }
+       
+            
 
 
         if (Input.GetKeyDown(KeyCode.Space) == true || Input.GetButtonDown("Jump"))
@@ -652,7 +696,8 @@ public class PlayerController : MonoBehaviour
     public bool TouchingWall()
     {
         if (isGrounded() == true) return false;
-        
+        if (rb.velocity.y >= 1f && isWallClimbing == false) return false;
+
 
         float extraHeight = .16f;
 
