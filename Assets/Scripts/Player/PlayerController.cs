@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     public AudioClip slideSound;
     public AudioClip wallclimbSound;
     public AudioClip wallslideSound;
+    public AudioClip fallingSound;
+    public AudioClip landSound;
     private string currentAudioState;
 
     public bool visualiserOn = true;
@@ -69,7 +71,7 @@ public class PlayerController : MonoBehaviour
     private float horizontalMovementInputRaw;
     private float horizontalMovementInput;
 
-    float dir = -1; // Ensimmainen suunta on vasemmalle
+    public float dir = -1; // Ensimmainen suunta on vasemmalle
 
 
     [Header("Dash")]
@@ -134,6 +136,9 @@ public class PlayerController : MonoBehaviour
 
     public AnimationClip PLAYER_CORNER_ASSIGN;
     private string PLAYER_CORNER;
+
+    public AnimationClip PLAYER_LANDING_ASSIGN;
+    private string PLAYER_LANDING;
 
     [SerializeField]
     private Vector2 offset1;
@@ -222,7 +227,7 @@ public class PlayerController : MonoBehaviour
 
     void ChangeSoundState(AudioClip audioState, float volume, bool isLooping, bool overide = false)
     {
-        Debug.Log("Current state: " + currentAudioState + " New state: " + audioState.name);
+        //Debug.Log("Current state: " + currentAudioState + " New state: " + audioState.name);
         if (currentAudioState == audioState.name && !overide) return;
         source.Stop();
         source.clip = audioState;
@@ -238,7 +243,7 @@ public class PlayerController : MonoBehaviour
 
     private void checkForLedge()
     {
-        Debug.Log(col.collisions.top + " " + col.collisions.bottom);
+        //Debug.Log(col.collisions.top + " " + col.collisions.bottom);
 
         if (col.collisions.top == false && col.collisions.bottom == true && canGrabLedge && rb.velocity.y > 0)
         {
@@ -272,7 +277,7 @@ public class PlayerController : MonoBehaviour
         rb.gravityScale = baseGravityScale;
         isClimbingCorner = false;
         animationEvents.evtClimbOver = false;
-
+        ChangeAnimationState(PLAYER_IDLE);
         Invoke("CanGrabLedge", .4f);
     }
 
@@ -286,7 +291,7 @@ public class PlayerController : MonoBehaviour
         {
             horizontalMovementInput = 0;
             
-            if (isGrounded() && isDashing == false)
+            if (isGrounded() && !isDashing && animationEvents.evtFallingOver)
             {
                 if (Mathf.Abs(rb.velocity.x) <= 3)
                 {
@@ -304,7 +309,7 @@ public class PlayerController : MonoBehaviour
             return; 
         } // jos input ei ole kovempaa kuin treshold niin resettaa input 0, jos dashaat tai kiipeat niin palaa
 
-        if (isGrounded() && isDashing == false)
+        if (isGrounded() && isDashing == false && animationEvents.evtFallingOver)
         {
             ChangeAnimationState(PLAYER_WALK);
             ChangeSoundState(runSound, 1f, true);
@@ -398,25 +403,26 @@ public class PlayerController : MonoBehaviour
 
     private void AirLanding()
     {
-        if (!isGrounded()) { hasLanded = false; return; };
-        
-        if(!hasLanded)
+        if (!isGrounded()) { hasLanded = false; animationEvents.evtFallingOver = false; return; };
+        if (!canGrabLedge) { hasLanded = true; animationEvents.evtFallingOver = true; return; };
+
+
+        if (!hasLanded)
         {
-            Debug.Log("I have landed");
+            //Debug.Log("imhere");
+            ChangeAnimationState(PLAYER_LANDING);
+            // tämä triggeraa eventin mikä kertoo millon animaation on loppunut
+            ChangeSoundState(landSound, .5f, false);
             hasLanded = true;
         }
-
-        
-
-
-
     }
 
     private void ModifyGravity()
     {
         if (isGrounded() == true) { rb.gravityScale = baseGravityScale; return; }  // jos olet maassa gravitaatio voima on normaali
         if (TouchingWall() == true) { rb.gravityScale = baseGravityScale; return; } // jos olet ilmassa gravitaatio voima on normaali
-        if (isClimbingCorner == true) return;
+        if (!canGrabLedge) return;
+
 
         trail.enabled = true;
 
@@ -426,7 +432,11 @@ public class PlayerController : MonoBehaviour
             rb.gravityScale = baseGravityScale * hangtimeGravity;
 
             if (isDashing != true)
+            {
                 ChangeAnimationState(PLAYER_AIRTIME);
+                ChangeSoundState(fallingSound, .1f, false);
+            }
+                
 
             return;
         }
@@ -574,6 +584,7 @@ public class PlayerController : MonoBehaviour
         PLAYER_SLIDE_GROUND_START = PLAYER_SLIDE_GROUND_START_ASSIGN.name;
         PLAYER_SLIDE_GROUND_END = PLAYER_SLIDE_GROUND_END_ASSIGN.name;
         PLAYER_CORNER = PLAYER_CORNER_ASSIGN.name;
+        PLAYER_LANDING = PLAYER_LANDING_ASSIGN.name;
 
 
 
@@ -646,7 +657,7 @@ public class PlayerController : MonoBehaviour
         {
             if ((Input.GetKeyDown(KeyCode.X) == true || Input.GetKeyDown(KeyCode.Mouse0) == true || Input.GetAxisRaw("Dash") > 0) && canDash == true)
             {
-                Debug.Log("I'm touching wall" + TouchingWall());
+                //Debug.Log("I'm touching wall" + TouchingWall());
                 StartCoroutine(Dash());
             }
         }

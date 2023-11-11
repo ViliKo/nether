@@ -73,13 +73,13 @@ AnimatorStateMachine:
     m_Position: {x: 460, y: -220, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2677677999860422878}
-    m_Position: {x: 470, y: -320, z: 0}
+    m_Position: {x: 50, y: -390, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2583188517613560004}
     m_Position: {x: 250, y: -270, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -1432196181664660193}
-    m_Position: {x: 250, y: -370, z: 0}
+    m_Position: {x: 20, y: -360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -616413744008021941}
     m_Position: {x: 22.229858, y: -294.70874, z: 0}
@@ -98,6 +98,12 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 7902522797520245504}
     m_Position: {x: 880, y: -180, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 1417626467046888663}
+    m_Position: {x: 430, y: -390, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -3122078248064513688}
+    m_Position: {x: 880, y: -360, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -129,6 +135,32 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: 2684896f6909890439bdbb8b8aa10290, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &-3122078248064513688
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: player-landing-2
+  m_Speed: 2
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: d6f5eeade9f4d0b49b5dd86f0659eebc, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -463,6 +495,32 @@ AnimatorState:
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: f00cfdcdca3f617468299ab397f2e088, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1102 &1417626467046888663
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: player-landing
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 99580f73faf25b1468edd0b223d08f5d, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
