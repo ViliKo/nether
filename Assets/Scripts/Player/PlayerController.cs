@@ -214,6 +214,9 @@ public class PlayerController : MonoBehaviour
 
         AirLanding();
 
+        TouchingObstacle();
+
+        TouchingObstaclePreventMove();
     }
 
     void ChangeAnimationState(string newState)
@@ -245,7 +248,7 @@ public class PlayerController : MonoBehaviour
     {
         //Debug.Log(col.collisions.top + " " + col.collisions.bottom);
 
-        if (col.collisions.top == false && col.collisions.bottom == true && canGrabLedge && rb.velocity.y > 0)
+        if (col.collisions.top == false && col.collisions.middle == true && canGrabLedge && rb.velocity.y > 0)
         {
             isClimbingCorner = true;
             canGrabLedge = false;
@@ -473,6 +476,16 @@ public class PlayerController : MonoBehaviour
         jumpsLeft = maxJumps;
     }  // function
 
+    private void TouchingObstaclePreventMove()
+    {
+        if (!TouchingObstacle()) return;
+
+        Debug.Log("im here bich");
+
+        if (rb.velocity.x > dir)
+            rb.velocity = new Vector2(0, rb.velocity.y);
+    }
+
 
 
 
@@ -502,7 +515,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            rb.velocity = Vector2.zero;
+            rb.velocity = new Vector2(0, -4f);
             ChangeAnimationState(PLAYER_SLIDE);
             ChangeSoundState(wallslideSound, .2f, true);
         }
@@ -677,8 +690,8 @@ public class PlayerController : MonoBehaviour
 
     public bool isGrounded()
     {
-        float extraVerticalHeight = .15f;
-        float extraHorizontalHeight = .08f;
+        float extraVerticalHeight = bc.edgeRadius/2+.2f;
+        float extraHorizontalHeight = bc.edgeRadius;
 
 
         col.VerticalRaycasts(bc, collisionLayer, extraVerticalHeight, extraHorizontalHeight);
@@ -710,12 +723,12 @@ public class PlayerController : MonoBehaviour
         if (rb.velocity.y >= 1f && isWallClimbing == false) return false;
 
 
-        float extraHeight = .16f;
+        float extraHeight = bc.edgeRadius/2+.2f;
 
         col.HorizontalRaycasts(dir, bc, collisionLayer, extraHeight);
 
 
-        if (col.collisions.top == false && col.collisions.bottom == false)
+        if (col.collisions.top == false && col.collisions.middle == false)
         {
             if (visualiserOn)
                 col.visualizeHorizontalRaysFalse(bc, dir, extraHeight);
@@ -731,6 +744,33 @@ public class PlayerController : MonoBehaviour
             return true;
         } // if
     } // function
+
+
+    public bool TouchingObstacle()
+    {
+        if (isGrounded() == true) return false;
+
+        float extraHeight = bc.edgeRadius / 2 + .2f;
+
+        col.HorizontalRaycasts(dir, bc, collisionLayer, extraHeight);
+
+        if (col.collisions.bottom == true && col.collisions.middle == false && col.collisions.top == false)
+        {
+
+            if (visualiserOn)
+                col.visualizeHorizontalRaysTrue(bc, dir, extraHeight);
+            return true;
+           
+        }
+        else
+        {
+            if (visualiserOn)
+                col.visualizeHorizontalRaysFalse(bc, dir, extraHeight);
+
+            return false;
+
+        }
+    }
     #endregion
 
 

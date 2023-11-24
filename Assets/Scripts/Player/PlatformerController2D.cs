@@ -10,6 +10,7 @@ public class PlatformerController2D : MonoBehaviour
     public struct Collisions
     {
         public bool top;
+        public bool middle;
         public bool bottom;
         public bool bottomLeft;
         public bool bottomRight;
@@ -33,6 +34,11 @@ public class PlatformerController2D : MonoBehaviour
             new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
             wallraycast * (bc.bounds.extents.x + extraHeight),
             Color.green);
+
+        Debug.DrawRay(
+            new Vector3(bc.bounds.center.x, bc.bounds.center.y - bc.bounds.size.y / 2 - extraHeight, 0),
+            wallraycast * (bc.bounds.extents.x + extraHeight),
+            Color.green);
     }
 
     public void visualizeHorizontalRaysFalse(BoxCollider2D bc, float vectorDir, float extraHeight)
@@ -54,6 +60,11 @@ public class PlatformerController2D : MonoBehaviour
 
         Debug.DrawRay(
             new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
+            wallraycast * (bc.bounds.extents.x + extraHeight),
+            Color.red);
+
+        Debug.DrawRay(
+            new Vector3(bc.bounds.center.x, bc.bounds.center.y - bc.bounds.size.y / 2 - extraHeight, 0),
             wallraycast * (bc.bounds.extents.x + extraHeight),
             Color.red);
     }
@@ -119,9 +130,15 @@ public class PlatformerController2D : MonoBehaviour
             bc.bounds.extents.x + extraHeight,
             collisionLayer);
 
+        RaycastHit2D hitMiddle = Physics2D.Raycast(
+            new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
+            wallraycast,
+            bc.bounds.extents.x + extraHeight,
+            collisionLayer);
+
 
         RaycastHit2D hitBottom = Physics2D.Raycast(
-            new Vector3(bc.bounds.center.x, bc.bounds.center.y + bc.bounds.size.y / 2 - 0.2f, 0),
+            new Vector3(bc.bounds.center.x, (bc.bounds.center.y - bc.bounds.size.y / 2) - extraHeight, 0),
             wallraycast,
             bc.bounds.extents.x + extraHeight,
             collisionLayer);
@@ -147,6 +164,26 @@ public class PlatformerController2D : MonoBehaviour
         }
 
 
+        if (hitMiddle.collider != null)
+        {
+
+            if (hitMiddle.collider.gameObject.tag == "nonClimbable")
+            {
+                return;
+            }
+        }
+
+
+        if (hitMiddle.collider == null)
+            collisions.middle = false;
+        else
+        {
+            collisions.middle = true;
+            hit = hitMiddle.collider;
+        }
+
+
+
         if (hitBottom.collider != null)
         {
 
@@ -164,7 +201,7 @@ public class PlatformerController2D : MonoBehaviour
             collisions.bottom = true;
             hit = hitBottom.collider;
         }
-            
+
 
 
 
