@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace StateMachine
 {
@@ -14,24 +15,20 @@ namespace StateMachine
         private CapsuleCollider2D _cc;
         private SpriteRenderer _sr;
         private PlayerAnimation _anim;
+        private Text _transitionReason;
 
         #endregion
 
+        [Header("Idle State settings")]
+        public float xInputTreshold = .15f;
+        public float rayHeight = .1f;
+        public AnimationClip idleAnimation;
 
+        // resettaa kaikki nama muuttujat
+        private bool _blockinObstacle;
         private float _xInput;
         private bool _jump;
-        public float inputTreshold = .15f;
-
-        [SerializeField]
-        private bool visualizer = true;
-
-
         
-        public float rayHeight = .1f;
-
-
-        public bool blockinObstacle = false;
-
 
 
         public override void Init(PlayerController parent, CharacterMode characterMode)
@@ -44,21 +41,14 @@ namespace StateMachine
             if (_sr == null) _sr = parent.GetComponentInChildren<SpriteRenderer>();
             if (_anim == null) _anim = parent.PlayerAnimation;
             if (_data == null) _data = parent.PersistentPlayerData;
+            if (_transitionReason == null) _transitionReason = parent.StateTransition;
 
             #endregion
 
-            if (visualizer)
-            {
-                _sr.color = Color.blue;
-                Debug.Log("<color=blue>Started an idle animation</color>");
-            }
+            Reset();
 
-
-            _data.jumpsLeft = _data.maxJumps;
-
-            _rb.velocity = new Vector2(0, 0);
-
-            _anim.ChangeAnimationState("player-idle");
+            _rb.velocity = Vector2.zero;
+            _anim.ChangeAnimationState(idleAnimation.name);
         }
 
         public override void CaptureInput()
@@ -69,30 +59,22 @@ namespace StateMachine
 
 
 
-        public override void FixedUpdate()
-        {
-
-        }
+        public override void FixedUpdate() {}
 
         public override void Update()
         {
-            _col.VerticalRaycasts(_cc, rayHeight);
-
-            if (visualizer)
-                Debug.Log("does it add to persistent data" + _data.jumpsLeft);
-
-            if (Mathf.Abs(_xInput) <= inputTreshold) return;
-            CheckForWall();
-            if (CheckInputDirectionIfCollided())
-                blockinObstacle = false;
-            else if (_col.collisions.HorizontalBottomUp)
-                blockinObstacle = true;
+            if (Mathf.Abs(_xInput) <= xInputTreshold) return;
+            bool touchingWall = CheckForWall();
+            if (CheckInputDirectionIfCollided(touchingWall))
+                _blockinObstacle = false;
+            else if (touchingWall)
+                _blockinObstacle = true;
                 
         }
 
-        private bool CheckInputDirectionIfCollided()
+        private bool CheckInputDirectionIfCollided(bool touchingWall)
         {
-            if (!_col.collisions.HorizontalBottomUp) return false;
+            if (!touchingWall) return false;
 
             float direction = -_sr.transform.localScale.x; // pitaa kaantaa sprite direction koska alkuperainen spriten suunta on vasemmalle
             if (direction == 1) // jos suunta on oikealle
@@ -107,26 +89,36 @@ namespace StateMachine
         public override void ChangeState()
         {
 
-            if (Mathf.Abs(_xInput) > inputTreshold && blockinObstacle == false)
-                    _runner.SetState(typeof(WalkState));
+            if (Mathf.Abs(_xInput) > xInputTreshold && _blockinObstacle == false) {
+                _transitionReason.text = "Idle -> Inputtia on enemman kuin raja on ja ei ole estetta -> Walk";
+                _runner.SetState(typeof(WalkState));
+            }
 
-            if (_jump && _col.collisions.VerticalBottom)
+            if (_jump && _col.VerticalRaycasts(_cc, rayHeight))
             {
-                Debug.Log(_jump + ": why the hell would this be true");
+                _transitionReason.text = "Idle -> Painettu hyppya ja raycast osuu maahan -> Jump";
                 _runner.SetState(typeof(JumpState));
             }
                 
-
-            if (!_col.collisions.VerticalBottom && !_jump)
+            if (!_col.VerticalRaycasts(_cc, rayHeight))
+            {
+                _transitionReason.text = "Idle -> Raycast ei osu maahan -> Putoaminen";
                 _runner.SetState(typeof(FallState));
+            }
+                
         }
 
-        public override void Exit()
+        public override void Exit() => Reset();
+        
+
+        private void Reset()
         {
-            blockinObstacle = false;
+            _blockinObstacle = false;
+            _xInput = 0;
+            _jump = false;
         }
 
-        private void CheckForWall() => _col.HorizontalRaycasts(-_sr.transform.localScale.x, _cc, .1f, false, true);
+        private bool CheckForWall() => _col.HorizontalRaycastsOriginBottomUp(-_sr.transform.localScale.x, _cc, rayHeight);
 
 
         

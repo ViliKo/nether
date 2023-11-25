@@ -19,11 +19,14 @@ namespace StateMachine
 
         #endregion
 
+        [Header("Dash State settings")]
         public float dashDistance = 5f; // Desired distance to dash
         public float dashForce = 10f; // Speed of the dash
+        public float rayHeight = .1f;
+
         private bool _isDashing;
         private float _initialPositionX;
-        public float rayHeight = .1f;
+        
 
 
 
@@ -43,8 +46,6 @@ namespace StateMachine
             _isDashing = true;
 
             _rb.velocity = Vector2.zero;
-
-
         }
 
 
@@ -56,13 +57,11 @@ namespace StateMachine
         public override void Update()
         {
             
-
-            _col.HorizontalRaycasts(-_sr.transform.localScale.x, _cc, dashDistance, false, true); // raycastaa suuntaan mihin dashaa
-            _col.VerticalRaycasts(_cc, rayHeight);
+            
 
             float newDashDistance;
 
-            if (_col.collisions.HorizontalBottomUp) // jos on osunut collideriin
+            if (_col.HorizontalRaycastsOriginBottomUp(-_sr.transform.localScale.x, _cc, dashDistance)) // jos on osunut collideriin
             {
                 newDashDistance = _col.hitDistance; // niin dashin etaisyys on colliderin etaisyys viela pienennettyna
 
@@ -101,7 +100,7 @@ namespace StateMachine
         {
             if (_isDashing) return;
 
-            if (_col.collisions.VerticalBottom)
+            if (_col.VerticalRaycasts(_cc, rayHeight))
                 _runner.SetState(typeof(IdleState));
             else
                 _runner.SetState(typeof(FallState));
@@ -109,6 +108,7 @@ namespace StateMachine
 
         public override void Exit()
         {
+            _isDashing = false;
         }
 
         void StopDash()

@@ -22,7 +22,7 @@ namespace StateMachine
 
 
 
-        [Header("Movement State settings")]
+        [Header("Spirit State settings")]
         public float xInputTreshold = .15f;
         public float dashInputTreshold = .15f;
         public float rayHeight = .1f;
@@ -107,8 +107,6 @@ namespace StateMachine
 
         public override void FixedUpdate()
         {
-            _col.VerticalRaycasts(_cc, rayHeight);
-
             Move(_xInput * runMaxSpeed, runMaxSpeed, runAcceleration, runDecceleration, walkAnimation.name, slideAnimation.name);
         }
 
@@ -133,7 +131,7 @@ namespace StateMachine
 
 
 
-            if (!_col.collisions.VerticalBottom && !_jump)
+            if (!_col.VerticalRaycasts(_cc, rayHeight) && !_jump)
             {
 
                 _runner.SetState(typeof(FallState));
@@ -154,7 +152,7 @@ namespace StateMachine
 
         private void CoyoteTimer()
         {
-            if (!_col.collisions.VerticalBottom)
+            if (!_col.VerticalRaycasts(_cc, rayHeight))
                 _coyoteTimer += Time.deltaTime;
 
         } // function

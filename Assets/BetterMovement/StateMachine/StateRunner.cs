@@ -19,7 +19,7 @@ namespace Utils.StateMachine
 
 
         private float _spiritModeTimer = 0f;
-        private float _spiritModeDuration = 3f; // Adjust the duration as needed
+        private float _spiritModeDuration = 10f; // Adjust the duration as needed
 
         protected virtual void Awake()
         {

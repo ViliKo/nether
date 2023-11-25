@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8043543d6bdf3f946ac1e1903616df53, type: 3}
-  m_Name: idle-state
+  m_Script: {fileID: 11500000, guid: 285e524d02d1dd24292ac1d3059e2b2b, type: 3}
+  m_Name: search-maniac
   m_EditorClassIdentifier: 
-  xInputTreshold: 0.15
-  rayHeight: 0.2
-  idleAnimation: {fileID: 7400000, guid: 39b2b38dbf983f14cb43c0976a43a1b0, type: 2}
+  searchDuration: 5
+  moveSpeed: 2
+  oscillationFrequency: 3
+  searchManiacAudio: {fileID: 8300000, guid: 7a79b7aacdc63c54c8515c5313503579, type: 3}

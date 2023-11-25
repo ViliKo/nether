@@ -16,24 +16,21 @@ namespace StateMachine
 
         #endregion
 
-        private float _xInput;
-        private bool _jump;
-        public float inputTreshold = .15f;
+
+        [Header("Land State settings")]
+        public float xInputTreshold = .15f;
         public float landingSlowdown = 0;
-
-        [SerializeField]
-        private float _rayHeight = .1f;
-
-        [SerializeField]
-        private bool visualizer = true;
-        private bool _landingExacuted;
-        private bool _isLandingFinished;
-        public AnimationClip landAnimation;
-
+        public float rayHeight = .1f;
         public float moveMaxSpeed = 8f; //Target speed we want the player to reach. asd
         public float moveAcceleration = 8f; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
-        public float moveDecceleration = 0.5f; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0.
+        public float moveDecceleration = 0.5f; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0
+        public AnimationClip landAnimation;
 
+
+        private bool _landingExacuted;
+        private bool _isLandingFinished;
+        private float _xInput;
+        private bool _jump;
 
 
         public override void Init(PlayerController parent, CharacterMode characterMode)
@@ -47,22 +44,14 @@ namespace StateMachine
 
             #endregion
 
-
-            _jump = false;
-            _rb.gravityScale = 2;
-            _landingExacuted = false;
-            _isLandingFinished = false;
-
-            if (visualizer)
-                _sr.color = Color.magenta;
+            Reset();
         }
 
         public override void CaptureInput()
         {
+   
             _xInput = Input.GetAxis("Horizontal");
-
-            if (Input.GetButtonDown("Jump"))
-                _jump = true;
+            _jump = Input.GetButtonDown("Jump");
         }
 
 
@@ -76,19 +65,16 @@ namespace StateMachine
 
         public override void FixedUpdate()
         {
-            _col.VerticalRaycasts(_cc, _rayHeight);
-            Land();
             
+            Land();
             Move(_xInput * moveMaxSpeed, moveMaxSpeed, moveAcceleration, moveDecceleration);
-
         }
 
         private void Land()
         {
-            if (_col.collisions.VerticalBottom && !_landingExacuted)
+            if (_col.VerticalRaycasts(_cc, rayHeight) && !_landingExacuted)
             {
                 _anim.ChangeAnimationState(landAnimation.name);
-                _rb.velocity = new Vector2(_rb.velocity.x, 0);
                 _landingExacuted = true;
             }
         }
@@ -104,23 +90,26 @@ namespace StateMachine
 
                 if (_jump)
                     _runner.SetState(typeof(JumpState));
-                else if (Mathf.Abs(_xInput) > inputTreshold)
+                else if (Mathf.Abs(_xInput) > xInputTreshold)
                     _runner.SetState(typeof(WalkState));
                 else
                     _runner.SetState(typeof(IdleState));
             }
-            else if (!_col.collisions.VerticalBottom && _rb.velocity.y < 0)
+            else if (!_col.VerticalRaycasts(_cc, rayHeight) && _rb.velocity.y < 0)
                 _runner.SetState(typeof(FallState));
            
         }
 
-        public override void Exit()
+        public override void Exit() => Reset();
+
+        private void Reset()
         {
+
             _landingExacuted = false;
             _isLandingFinished = false;
+            _xInput = 0;
+            _jump = false;
         }
-
-
     }
 }
 

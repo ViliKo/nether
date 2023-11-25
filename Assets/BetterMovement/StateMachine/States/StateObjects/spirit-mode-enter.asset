@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xInputTreshold: 0.15
   dashInputTreshold: 0.15
-  rayHeight: 0.1
-  visualizer: 1
+  rayHeight: 0.2
+  visualizer: 0
   coyoteTime: 0.2
   walkAnimation: {fileID: 7400000, guid: ca564680d8b728f46acf81749e92a708, type: 2}
   slideAnimation: {fileID: 7400000, guid: bd96ff4f3782ce04fa2c169740157360, type: 2}

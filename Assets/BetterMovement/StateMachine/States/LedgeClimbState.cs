@@ -26,9 +26,10 @@ namespace StateMachine
         public Vector2 offset2;
         public AnimationClip ledgeClimbAnimation;
 
-        private bool isClimbingCorner;
-        private Vector2 climbBegunPosition;
-        private Vector2 climbOverPosition;
+        // naita ei tarvitse resettaa silla aina, kun tila alkaa tehdaan uudet
+        private bool _isClimbingCorner;
+        private Vector2 _climbBegunPosition;
+        private Vector2 _climbOverPosition;
 
 
         public override void Init(PlayerController parent, CharacterMode characterMode)
@@ -44,58 +45,41 @@ namespace StateMachine
 
             #endregion
 
-            _col.Reset();
-            isClimbingCorner = true;
+            _isClimbingCorner = true;
             _rb.velocity = Vector2.zero;
             _rb.gravityScale = 0;
 
             Vector2 ledgePosition = _rb.transform.position;
-            climbBegunPosition = ledgePosition + offset1;
-            climbOverPosition = new Vector2(ledgePosition.x + (offset2.x * -_sr.transform.localScale.x), ledgePosition.y + offset2.y);
+            _climbBegunPosition = ledgePosition + offset1;
+            _climbOverPosition = new Vector2(ledgePosition.x + (offset2.x * -_sr.transform.localScale.x), ledgePosition.y + offset2.y);
 
-            _rb.transform.position = climbBegunPosition;
+            _rb.transform.position = _climbBegunPosition;
             _anim.ChangeAnimationState(ledgeClimbAnimation.name); // Tässä animaatiossa on tapahtuma, joka laukaisee alla olevan funktion
-
-
         }
-
-
-        public override void CaptureInput()
-        {
-            
-        }
-
-
 
         public override void Update()
         {
             if (_anim.getCurrentAnimationName(ledgeClimbAnimation.name) && _anim.isAnimationFinished())
             {
-                _rb.transform.position = climbOverPosition;
+                _rb.transform.position = _climbOverPosition;
                 _rb.gravityScale = _data.baseGravityScale;
-                isClimbingCorner = false;
+                _isClimbingCorner = false;
             }
         }
 
-        public override void FixedUpdate()
-        {
-            
-        }
 
         public override void ChangeState()
         {
-            if (!isClimbingCorner)
-                _runner.SetState(typeof(IdleState));
+            if (!_isClimbingCorner) _runner.SetState(typeof(IdleState));
         }
 
-        public override void Exit()
-        {
-           
-        }
+        public override void CaptureInput() {}
+        public override void Exit() {}
+        public override void FixedUpdate() {}
 
 
 
-     
+
 
     }
 

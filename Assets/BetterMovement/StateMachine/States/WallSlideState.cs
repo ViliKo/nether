@@ -29,7 +29,7 @@ namespace StateMachine
         private float _yInput;
         private bool _jump;
         public float inputTreshold = .15f;
-
+        
 
 
 
@@ -67,8 +67,6 @@ namespace StateMachine
 
         public override void FixedUpdate()
         {
-            _col.VerticalRaycasts(_cc, _rayHeight);
-            _col.HorizontalRaycasts(-_sr.transform.localScale.x, _cc, .1f, false, false, true, true);
             _rb.velocity = new Vector2(0, -slideSpeed);
         }
 
@@ -77,13 +75,12 @@ namespace StateMachine
         {
             if (_yInput > inputTreshold)
                 _runner.SetState(typeof(WallClimbState));
-            else if (_col.collisions.VerticalBottom) 
+            else if (_col.VerticalRaycasts(_cc, _rayHeight)) 
                 _runner.SetState(typeof(IdleState));
             else if (_jump)
                 _runner.SetState(typeof(JumpState));
-            else if (!_col.collisions.HorizontalUp && !_col.collisions.HorizontalUpLower)
+            else if (!_col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, rayHeight) && !_col.HorizontalRaycastsOriginUpLower(-_sr.transform.localScale.x, _cc, rayHeight))
             {
-                _col.Reset();
                 _data.jumpsLeft -= 1;
                 _runner.SetState(typeof(FallState));
             }

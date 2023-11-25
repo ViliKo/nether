@@ -24,6 +24,7 @@ namespace StateMachine
         public float inputTreshold = .15f;
         public AnimationClip WallClimbAnimation;
         public bool visualizer = false;
+        public float rayHeight = .1f;
 
 
         // yksityiset muuttujat
@@ -67,8 +68,6 @@ namespace StateMachine
         public override void Update() {}
 
         public override void FixedUpdate() {
-
-            _col.HorizontalRaycasts(-_sr.transform.localScale.x, _cc, .1f, false, false, true, true);
             WallClimb();
         }
 
@@ -79,7 +78,7 @@ namespace StateMachine
                 _runner.SetState(typeof(WallSlideState));
             if (_jump)  // jos painat hyppya mene seina hyppyyn 
                 _runner.SetState(typeof(JumpState));
-            if (!_col.collisions.HorizontalUp && _col.collisions.HorizontalUpLower)
+            if (!_col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, rayHeight) && _col.HorizontalRaycastsOriginUpLower(-_sr.transform.localScale.x, _cc, rayHeight))
                 _runner.SetState(typeof(LedgeClimbState));
 
 
