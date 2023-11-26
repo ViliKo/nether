@@ -5,16 +5,18 @@ using UnityEngine;
 namespace CompositeStateRunner
 {
 
-    [CreateAssetMenu(menuName = "AI/SearchStateManiac")]
-    public class SearchStateManiac : AIState<AIBaseController>
+    [CreateAssetMenu(menuName = "AI/ManiacSearchState")]
+    public class ManiacSearchState : AIState<AIBaseController>
     {
         [SerializeField] private float searchDuration = 5f;
         [SerializeField] private float moveSpeed = 50f;
+        public LayerMask land;
         public float oscillationFrequency = 3f;
         public AudioClip searchManiacAudio;
         private float direction = 1f;
 
         private BoxCollider2D _bc;
+        private Rigidbody2D _rb;
 
         
 
@@ -23,6 +25,7 @@ namespace CompositeStateRunner
         public override void Enter()
         {
             if (_bc == null) _bc = _aiController.GetComponent<BoxCollider2D>();
+            if (_rb == null) _rb = _aiController.GetComponent<Rigidbody2D>();
             direction = 1f;
 
             AudioManager.Instance.PlaySound(searchManiacAudio, _aiController.transform.position);
@@ -33,7 +36,7 @@ namespace CompositeStateRunner
             
 
             AudioManager.Instance.UpdateSoundPosition(_aiController.transform.position);
-            MoveRandomly();
+            MoveRightToLeftWithSin();
         }
 
         public override void Exit()
@@ -41,20 +44,21 @@ namespace CompositeStateRunner
 
         }
 
-        private void MoveRandomly()
+        private void MoveRightToLeftWithSin()
         {
-            if (RaycastHitLeft() && !RaycastHitRight())
+            if (!RaycastHitRight())
             {
                 direction *= -1;
+                Debug.Log("The direction shifted to" + direction);
                 _aiController.transform.localScale = new Vector3(direction, _aiController.transform.localScale.y, _aiController.transform.localScale.z);
             }
 
             float speedMultiplier = Mathf.Sin(Time.time * oscillationFrequency);
+            float movementSpeed = moveSpeed + moveSpeed * Mathf.Abs(speedMultiplier);
 
-
-
-            Vector2 movement = new Vector2((moveSpeed * direction) + (moveSpeed * speedMultiplier), 0);
-            _aiController.transform.Translate(movement * Time.deltaTime);
+            Vector2 movement = new Vector2(direction * movementSpeed, 0);
+            Debug.Log("Movement speed of goblin" + movement);
+            _rb.velocity = movement;
         }
 
         private bool RaycastHitRight()
@@ -63,7 +67,7 @@ namespace CompositeStateRunner
             
             Vector2 bottomRightCorner = (Vector2)_aiController.transform.TransformPoint(localBottomRight);
 
-            RaycastHit2D hit = Physics2D.Raycast(bottomRightCorner, Vector2.down, .1f);
+            RaycastHit2D hit = Physics2D.Raycast(bottomRightCorner, Vector2.down, .1f, land);
 
 
             if (hit.collider != null)

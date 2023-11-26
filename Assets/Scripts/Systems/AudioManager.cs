@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class AudioManager : MonoBehaviour
 {
     private static AudioManager instance;
 
     private AudioClip currentAudioClip;
     GameObject audioObject;
+
+    [SerializeField] private AudioClip ambiance;
+    private AudioSource layerPlayer;
 
     public static AudioManager Instance
     {
@@ -38,6 +42,9 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        layerPlayer = GetComponent<AudioSource>();
+        LayerPlayer(ambiance);
     }
 
     // Dictionary to store the currently playing instances of each AudioClip
@@ -88,5 +95,12 @@ public class AudioManager : MonoBehaviour
         {
             audioObject.transform.position = newPosition;
         }
+    }
+
+    private void LayerPlayer(AudioClip clip)
+    {
+        layerPlayer.clip = clip;
+        layerPlayer.loop = true;
+        layerPlayer.Play();
     }
 }

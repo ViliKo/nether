@@ -6,9 +6,9 @@ namespace CompositeStateRunner
 {
     public class AIBaseController : MonoBehaviour
     {
-        [SerializeField] private List<AIState<AIBaseController>> _searchStates;
-        [SerializeField] private List<AIState<AIBaseController>> _chaseStates;
-        [SerializeField] private List<AIState<AIBaseController>> _attackStates;
+        [SerializeField] AIState<AIBaseController> _searchState;
+        [SerializeField] AIState<AIBaseController> _chaseState;
+        [SerializeField] AIState<AIBaseController> _attackState;
 
         private AIState<AIBaseController> _activeSearchState;
         private AIState<AIBaseController> _activeChaseState;
@@ -17,9 +17,7 @@ namespace CompositeStateRunner
         private void Start()
         {
             // Initialize with default states
-            SetSearchState(_searchStates[0]);
-            SetChaseState(_chaseStates[0]);
-            SetAttackState(_attackStates[0]);
+            SetSearchState();
         }
 
         private void Update()
@@ -29,26 +27,26 @@ namespace CompositeStateRunner
             _activeAttackState?.Update();
         }
 
-        public void SetSearchState(AIState<AIBaseController> state)
+        public void SetSearchState()
         {
             _activeSearchState?.Exit();
-            _activeSearchState = state;
+            _activeSearchState = _searchState;
             _activeSearchState?.Init(this);
             _activeSearchState?.Enter();
         }
 
-        public void SetChaseState(AIState<AIBaseController> state)
+        public void SetChaseState()
         {
             _activeChaseState?.Exit();
-            _activeChaseState = state;
+            _activeChaseState = _chaseState;
             _activeChaseState?.Init(this);
             _activeChaseState?.Enter();
         }
 
-        public void SetAttackState(AIState<AIBaseController> state)
+        public void SetAttackState()
         {
             _activeAttackState?.Exit();
-            _activeAttackState = state;
+            _activeAttackState = _attackState;
             _activeAttackState?.Init(this);
             _activeAttackState?.Enter();
         }

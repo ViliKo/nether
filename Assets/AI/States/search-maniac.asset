@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   searchDuration: 5
   moveSpeed: 2
+  land:
+    serializedVersion: 2
+    m_Bits: 8
   oscillationFrequency: 3
   searchManiacAudio: {fileID: 8300000, guid: 7a79b7aacdc63c54c8515c5313503579, type: 3}
