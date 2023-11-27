@@ -22,3 +22,4 @@ MonoBehaviour:
   runMaxSpeed: 8
   runAcceleration: 8
   runDecceleration: 0.5
+  spiritMaterial: {fileID: 2100000, guid: d77bae3c431043243b18a564324e9c50, type: 2}

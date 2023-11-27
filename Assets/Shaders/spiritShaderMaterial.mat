@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: smokeTrailMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: ab873bf08ba506f42be1042f52e35308, type: 3}
+  m_Name: spiritShaderMaterial
+  m_Shader: {fileID: -6465566751694194690, guid: 0f72c0c995f508349ab40f156fb3bb3e, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -24,7 +24,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -48,10 +48,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_dba27558aeb249818c283b5455d83ec6: 8
+    - Vector1_75bd0ca4b7ce47769a5e949b74e4879e: 0.5
+    - Vector1_8af48db9196b424093793ab1afe2d7f6: 0.02
+    - Vector1_f49d160ea4884596bf26d57ab1b857c6: 0.02
     - _EnableExternalAlpha: 0
     m_Colors:
-    - Color_485ae71a07244339b3f096b43919bd30: {r: 9.194218, g: 11.1254225, b: 9.802479, a: 0}
+    - Color_4545c846d09a4dd89bd22eeacd9bcfdc: {r: 0, g: 0, b: 0, a: 0}
+    - Color_a7cc541909b6451da24c8d210278f746: {r: 0.02590962, g: 0.024306422, b: 0.013590329, a: 0.2}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}

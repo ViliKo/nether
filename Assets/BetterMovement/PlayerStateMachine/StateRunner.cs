@@ -19,11 +19,17 @@ namespace Utils.StateMachine
 
 
         private float _spiritModeTimer = 0f;
-        private float _spiritModeDuration = 10f; // Adjust the duration as needed
+        private float _spiritModeDuration = 10f; 
+
+        private SpriteRenderer _sr;
+        private Material _baseMaterial;
 
         protected virtual void Awake()
         {
-            _cooldownManager = new CooldownManager(); // New line
+            _cooldownManager = new CooldownManager();
+            _sr = GetComponent<SpriteRenderer>();
+            _baseMaterial = _sr.material;
+
             SetState(_states[0].GetType());
         }
 
@@ -31,7 +37,6 @@ namespace Utils.StateMachine
         {
             _currentMode = mode;
             transform.position = _startPosition;
-            // You might want to handle any specific logic for mode change here
         }
 
         public void SetState(Type newStateType, params object[] parameters)
@@ -81,8 +86,9 @@ namespace Utils.StateMachine
                 if (_spiritModeTimer <= 0)
                 {
                     SetMode(CharacterMode.Normal, _startPosition);
-                    // Additional logic for transitioning back to the normal mode
                     Destroy(GameObject.FindGameObjectWithTag("freezeFrame"));
+                    _sr.material = _baseMaterial;
+
                 }
             }
 

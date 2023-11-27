@@ -33,7 +33,7 @@ namespace StateMachine
         public float runMaxSpeed = 8f; //Target speed we want the player to reach.
         public float runAcceleration = 8f; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
         public float runDecceleration = 0.5f; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0.
-
+        public Material spiritMaterial;
 
 
         private float _xInput;
@@ -42,6 +42,8 @@ namespace StateMachine
         private float _coyoteTimer;
 
         private GameObject freezeFrame;
+
+        
 
 
 
@@ -65,6 +67,7 @@ namespace StateMachine
 
             Debug.Log(freezeFrame);
 
+            _sr.material = spiritMaterial;
 
 
             _coyoteTimer = 0;
