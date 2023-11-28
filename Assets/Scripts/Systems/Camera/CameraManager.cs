@@ -41,7 +41,7 @@ public class CameraManager : MonoBehaviour
 
 
         }
-        Debug.Log("CUrretn camera " + currentCamera); 
+        //Debug.Log("CUrretn camera " + currentCamera); 
         
     }
 

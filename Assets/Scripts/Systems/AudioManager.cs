@@ -36,7 +36,7 @@ public class AudioManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject); Jos tama on juuri objekti laita paalle
         }
         else
         {

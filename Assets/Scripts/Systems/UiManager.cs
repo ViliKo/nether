@@ -39,63 +39,23 @@ public class UiManager : MonoBehaviour
 
 
      void Awake() {
-        // if(GameObject.Find("Canvas")== null)return;
-            
-        //     canvas = GameObject.Find("Canvas");
-        // if(GameObject.Find("DeathScreen") != null)    
-        //     deathScreen = GameObject.Find("DeathScreen");
-
-        //     isThereLivesObject =false;
-        // if(canvas.transform.Find("livesObject")){
-        //       }
-            // livesObject = canvas.transform.Find("livesObject");
             LifeSpawnPos = new Vector2(livesObject.transform.position.x,livesObject.transform.position.y);
             isThereLivesObject= true;
-            Debug.Log("Transform object found" +livesObject);
+            //Debug.Log("Transform object found" +livesObject);
       
              spaceBetweenLifeImages= 20;
 
-        //if(FadeInOutObject == null){
-
-
-        //    Debug.LogError("You need to add FadeInOutObject to UiManager");
-        //}
-        //else{
-
-        //    //fade = FadeInOutObject.GetComponent<SceneTransitionFade>();
-        //}
-
-
-            //Tää pitää olla awakessa että se hakee prefabin
-            //ennen kuin pelaaja käyttää sitä start functiossaan
-        //    lifePrefab = Resources.Load("LifeImage") as GameObject;
-
-
-           //tärkee määrittää tässtä 
-           //että se määritetään ennen kun player kutsuu sen startissa
+     
           
     }
     void Start(){
-            //Tee tän niminen Prefab joka on healtin kuva 
- 
-    // HideDeathScreen();
- 
-    
-    // CreateLifeImages(3);
 
     }
 
   
 
     public void ShowDeathScreen(){
-    //   deathScreen.SetActive(true);
-    //   deathScreen.SetActive(!gameObject.activeInHierarchy);
 
-        
-        //fade.fadeIn = true;
-
-
-    
 
       for(int i = 0; i<ObjectsToTurnOff.Length; i++){
 
@@ -109,15 +69,6 @@ public class UiManager : MonoBehaviour
 
 
 
-    // public void HideDeathScreen(){
-
-    //     // deathScreen.SetActive(false);
-    //     for(int i = 0; i<ObjectsToTurnOff.Length; i++){
-
-    //        ObjectsToTurnOff[i].SetActive(false);     
-    //     }
-
-    // }
 
   public void HideLives(){
 

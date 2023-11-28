@@ -49,7 +49,7 @@ namespace CompositeStateRunner
             if (!RaycastHitRight())
             {
                 direction *= -1;
-                Debug.Log("The direction shifted to" + direction);
+                //Debug.Log("The direction shifted to" + direction);
                 _aiController.transform.localScale = new Vector3(direction, _aiController.transform.localScale.y, _aiController.transform.localScale.z);
             }
 
@@ -57,7 +57,7 @@ namespace CompositeStateRunner
             float movementSpeed = moveSpeed + moveSpeed * Mathf.Abs(speedMultiplier);
 
             Vector2 movement = new Vector2(direction * movementSpeed, 0);
-            Debug.Log("Movement speed of goblin" + movement);
+            //Debug.Log("Movement speed of goblin" + movement);
             _rb.velocity = movement;
         }
 

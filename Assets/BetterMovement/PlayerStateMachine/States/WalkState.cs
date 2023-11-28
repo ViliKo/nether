@@ -83,7 +83,6 @@ namespace StateMachine
        
             if (Mathf.Abs(_rb.velocity.x) <= 0.3 && Mathf.Abs(_xInput) < xInputTreshold)
             {
-
                 _transitionReason.text = "Kavely -> horisonttaalinen nopeus oli vahemman kuin 0.02 -> Lepo";
                 _runner.SetState(typeof(IdleState));
             }
@@ -91,7 +90,6 @@ namespace StateMachine
 
             if (_coyoteTimer < coyoteTime && _jump)
             {
-
                 _transitionReason.text = "Kavely -> coyote ajastin oli pienempi kuin maaritetty aika ja hyppya on painettu -> Hyppy";
                 _runner.SetState(typeof(JumpState));
             }

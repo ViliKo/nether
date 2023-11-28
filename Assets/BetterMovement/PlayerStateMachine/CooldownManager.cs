@@ -9,9 +9,19 @@ namespace Utils.StateMachine
     {
         private Dictionary<Type, float> _cooldowns = new Dictionary<Type, float>();
 
+        public static event Action<Type, float> CooldownStarted;
+
+
+     
+
+
         public void StartCooldown(Type abilityType, float cooldownTime)
         {
             _cooldowns[abilityType] = Time.time + cooldownTime;
+
+            CooldownStarted?.Invoke(abilityType, cooldownTime);
+            Debug.Log("this is my ability: " + abilityType);
+
         }
 
         public bool IsAbilityOnCooldown(Type abilityType)
@@ -26,5 +36,6 @@ namespace Utils.StateMachine
 
             // This method can be expanded based on your specific needs
         }
+
     }
 }

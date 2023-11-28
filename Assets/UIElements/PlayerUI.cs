@@ -1,59 +1,89 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
+using System;
+using Utils.StateMachine;
+using StateMachine;
 
-public class PlayerUI : MonoBehaviour
+public class PlayerUI : MonoBehaviour, ICooldownObserver
 {
-    private Image[] cooldownImages;
-    private Image cooldownImage;
+    private Image dashImage;
+    private Image spiritModeImage;
 
-    public float cooldownDuration = 10f;  // Set the cooldown duration in seconds
-    private float cooldownTimer;
+    private float dashCooldownDuration;
+    private float spiritCooldownDuration;
+
+    private float dashCooldownTimer;
+    private float spiritCooldownTimer;
+
+    private bool dashCooldownTriggered = false;
+    private bool spiritCooldownTriggered = false;
 
     void Start()
     {
-
-       cooldownImages = GetComponentsInChildren<Image>();
+        Image[] cooldownImages = GetComponentsInChildren<Image>();
 
         foreach (Image cooldownImageSearched in cooldownImages)
         {
-            if (cooldownImageSearched.gameObject.name == "dash-cooldown")
-            {
-                // Do something with the component
-                Debug.Log("Found Image component with name 'YourTargetName': " + cooldownImageSearched);
-                cooldownImage = cooldownImageSearched;
-                
-                break;  // Stop searching after finding the first match
-            }
+            if (cooldownImageSearched.gameObject.name == "dash-fill")
+                dashImage = cooldownImageSearched;
+            if (cooldownImageSearched.gameObject.name == "spirit-fill")
+                spiritModeImage = cooldownImageSearched;
         }
 
-        cooldownImage.fillAmount = 0;
+        Debug.Log(spiritModeImage);
 
-        cooldownTimer = cooldownDuration;
-        UpdateCooldownUI();
+        dashImage.fillAmount = 0;
+        spiritModeImage.fillAmount = 0;
+
+        CooldownManager.CooldownStarted += OnCooldownStarted;
     }
 
-    void Update()
+    void OnDestroy()
     {
-        // Update the cooldown timer
-        cooldownTimer -= Time.deltaTime;
-
-        // Update the UI
-        UpdateCooldownUI();
+        CooldownManager.CooldownStarted -= OnCooldownStarted;
     }
 
-    void UpdateCooldownUI()
+    private void Update()
     {
-        // Calculate the fill amount based on the remaining cooldown time
+        if (dashCooldownTriggered)
+        {
+            dashCooldownTimer -= Time.deltaTime;
+            UpdateCooldownUI(dashImage, dashCooldownTimer, dashCooldownDuration, ref dashCooldownTriggered);
+        }
+
+        if (spiritCooldownTriggered)
+        {
+            spiritCooldownTimer -= Time.deltaTime;
+            UpdateCooldownUI(spiritModeImage, spiritCooldownTimer, spiritCooldownDuration, ref spiritCooldownTriggered);
+        }
+    }
+
+    void UpdateCooldownUI(Image cooldownImage, float cooldownTimer, float cooldownDuration, ref bool cooldownTriggered)
+    {
         float fillAmount = Mathf.Clamp01(1 - (cooldownTimer / cooldownDuration));
-
-        // Set the fill amount of the cooldown image
         cooldownImage.fillAmount = fillAmount;
 
-        // Check if the cooldown is complete
         if (cooldownTimer <= 0)
         {
-            cooldownTimer = cooldownDuration;  // Reset the cooldown timer
+            cooldownTriggered = false;
         }
+    }
+
+    public void OnCooldownStarted(Type abilityType, float cooldownTime)
+    {
+        if (abilityType == typeof(DashState))
+        {
+            dashCooldownTriggered = true;
+            dashCooldownTimer = cooldownTime;
+            dashCooldownDuration = cooldownTime;
+        }
+        if (abilityType == typeof(SpiritModeEnterState))
+        {
+            spiritCooldownTriggered = true;
+            spiritCooldownTimer = cooldownTime;
+            spiritCooldownDuration = cooldownTime;
+        }
+
+        Debug.Log("triggered from ui");
     }
 }

@@ -13,16 +13,18 @@ namespace Utils.StateMachine
         [SerializeField]
         private List<State<T>> _states;
         private State<T> _activeState;
-        private CharacterMode _currentMode = CharacterMode.Normal;
         private CooldownManager _cooldownManager;
+        private CharacterMode _currentMode = CharacterMode.Normal;
+        
         protected Vector2 _startPosition;
 
 
         private float _spiritModeTimer = 0f;
         private float _spiritModeDuration = 10f; 
-
         private SpriteRenderer _sr;
         private Material _baseMaterial;
+
+        public event Action<CharacterMode> ModeChanged;
 
         protected virtual void Awake()
         {
@@ -30,13 +32,24 @@ namespace Utils.StateMachine
             _sr = GetComponent<SpriteRenderer>();
             _baseMaterial = _sr.material;
 
+            CooldownManager.CooldownStarted += OnCooldownStarted;
+
             SetState(_states[0].GetType());
+        }
+
+        private void OnCooldownStarted(Type abilityType, float cooldownTime)
+        {
+            Debug.Log("Event triggered form state runner");
+            // You can add more information to this event if needed
+            // For example, you might want to know which ability is on cooldown
         }
 
         public void SetMode(CharacterMode mode, Vector2 _startPosition)
         {
             _currentMode = mode;
             transform.position = _startPosition;
+
+            ModeChanged?.Invoke(mode);
         }
 
         public void SetState(Type newStateType, params object[] parameters)
@@ -68,7 +81,7 @@ namespace Utils.StateMachine
             }
             else
             {
-                Debug.Log($"{abilityType.Name} is on cooldown.");
+                //Debug.Log($"{abilityType.Name} is on cooldown.");
             }
         }
 
@@ -103,6 +116,11 @@ namespace Utils.StateMachine
             _activeState.FixedUpdate();
         }
 
-      
+
+        private void OnDisable()
+        {
+            CooldownManager.CooldownStarted -= OnCooldownStarted;
+        }
+
     }
 }
