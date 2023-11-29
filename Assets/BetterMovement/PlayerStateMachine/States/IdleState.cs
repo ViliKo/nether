@@ -23,12 +23,14 @@ namespace StateMachine
         public float xInputTreshold = .15f;
         public float rayHeight = .1f;
         public AnimationClip idleAnimation;
+        public float selectedInputTreshold;
+
 
         // resettaa kaikki nama muuttujat
         private bool _blockinObstacle;
         private float _xInput;
         private bool _jump;
-        
+        private bool _spiritState;
 
 
         public override void Init(PlayerController parent, CharacterMode characterMode)
@@ -55,6 +57,12 @@ namespace StateMachine
         {
             _xInput = Input.GetAxis("Horizontal");
             _jump = Input.GetButtonDown("Jump");
+
+            if (Input.GetAxisRaw("Select") > selectedInputTreshold)
+            {
+                if (Input.GetKey(KeyCode.Joystick1Button3))
+                    _spiritState = true;
+            }
         }
 
 
@@ -105,7 +113,12 @@ namespace StateMachine
                 _transitionReason.text = "Idle -> Raycast ei osu maahan -> Putoaminen";
                 _runner.SetState(typeof(FallState));
             }
-                
+
+            if (_spiritState)
+            {
+                _runner.ActivateAbility(typeof(SpiritModeEnterState), 10f);
+            }
+
         }
 
         public override void Exit() => Reset();
@@ -116,6 +129,7 @@ namespace StateMachine
             _blockinObstacle = false;
             _xInput = 0;
             _jump = false;
+            _spiritState = false;
         }
 
         private bool CheckForWall() => _col.HorizontalRaycastsOriginBottomUp(-_sr.transform.localScale.x, _cc, rayHeight);

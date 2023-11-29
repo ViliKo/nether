@@ -15,19 +15,23 @@ namespace Utils.StateMachine
         private State<T> _activeState;
         private CooldownManager _cooldownManager;
         private CharacterMode _currentMode = CharacterMode.Normal;
-        
-        protected Vector2 _startPosition;
 
+        private bool _teleportToPrevLocation;
+        protected Vector2 _startPosition;
+        protected float _startDirection;
+        private Type prevState;
 
         private float _spiritModeTimer = 0f;
         private float _spiritModeDuration = 10f; 
         private SpriteRenderer _sr;
         private Material _baseMaterial;
 
-        public event Action<CharacterMode> ModeChanged;
+        public static event Action<CharacterMode> ModeChanged;
 
         protected virtual void Awake()
         {
+            _teleportToPrevLocation = false;
+
             _cooldownManager = new CooldownManager();
             _sr = GetComponent<SpriteRenderer>();
             _baseMaterial = _sr.material;
@@ -44,16 +48,29 @@ namespace Utils.StateMachine
             // For example, you might want to know which ability is on cooldown
         }
 
-        public void SetMode(CharacterMode mode, Vector2 _startPosition)
+
+
+        public void SetMode(CharacterMode mode)
         {
             _currentMode = mode;
-            transform.position = _startPosition;
+
+            if (_teleportToPrevLocation)
+            {
+                _teleportToPrevLocation = false;
+                transform.position = _startPosition;
+                transform.localScale = new Vector2(_startDirection, transform.localScale.y);
+                DestroyAllObjectsWithTag("freezeFrame");
+                Debug.Log(_startDirection + " This is the start direction");
+            }
+  
 
             ModeChanged?.Invoke(mode);
         }
 
         public void SetState(Type newStateType, params object[] parameters)
         {
+            prevState = newStateType; // ota edellinen tila talteen, etta moden jalkeen voi palata siihen
+
             if (_activeState != null)
                 _activeState.Exit();
             
@@ -70,11 +87,8 @@ namespace Utils.StateMachine
             if (!_cooldownManager.IsAbilityOnCooldown(abilityType))
             {
                 if (abilityType == typeof(SpiritModeEnterState))
-                {
-                    SetMode(CharacterMode.Spirit, transform.position);
-                    _spiritModeTimer = _spiritModeDuration;
-                    _startPosition = transform.position;
-                }
+                    EnterSpiritState();
+                
 
                 SetState(abilityType, parameters);
                 _cooldownManager.StartCooldown(abilityType, cooldownTime);
@@ -97,18 +111,26 @@ namespace Utils.StateMachine
             {
                 _spiritModeTimer -= Time.deltaTime;
                 if (_spiritModeTimer <= 0)
-                {
-                    SetMode(CharacterMode.Normal, _startPosition);
-                    Destroy(GameObject.FindGameObjectWithTag("freezeFrame"));
-                    _sr.material = _baseMaterial;
-
-                }
+                    ExitSpiritMode();    
             }
-
-
             _activeState.ChangeState();
+        }
 
+        public void ExitSpiritMode()
+        {
 
+            _teleportToPrevLocation = true;
+            SetState(prevState);
+            SetMode(CharacterMode.Normal);
+            _sr.material = _baseMaterial;
+        }
+
+        public void EnterSpiritState()
+        {
+            SetMode(CharacterMode.Spirit);
+            _spiritModeTimer = _spiritModeDuration;
+            _startDirection = transform.localScale.x;
+            _startPosition = transform.position;
         }
 
         private void FixedUpdate()
@@ -122,5 +144,15 @@ namespace Utils.StateMachine
             CooldownManager.CooldownStarted -= OnCooldownStarted;
         }
 
+
+        private void DestroyAllObjectsWithTag(string tag)
+        {
+            GameObject[] objectsToDestroy = GameObject.FindGameObjectsWithTag(tag);
+
+            foreach (GameObject obj in objectsToDestroy)
+            {
+                Destroy(obj);
+            }
+        }
     }
 }

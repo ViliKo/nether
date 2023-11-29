@@ -9,10 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(TrailRenderer))]
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(PlatformerController2D))]
-public class PlayerController : MonoBehaviour
+public class PlayerController3 : MonoBehaviour
 {
 
-    public static PlayerController Player { get; private set; }
+  
 
     private SpriteRenderer spriteRenderer;
 
@@ -156,17 +156,7 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    private void Awake()
-    {
-        if (Player != null && Player != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Player = this;
-        }
-    }
+
 
     // Kun Peli alkaa niin laske ja aseta muuttujat
     void Start()

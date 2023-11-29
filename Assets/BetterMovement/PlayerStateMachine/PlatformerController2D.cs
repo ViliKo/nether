@@ -5,7 +5,8 @@ using UnityEngine;
 namespace StateMachine { 
     public class PlatformerController2D : MonoBehaviour
     {
-        public Collider2D hit;
+        private Collider2D hit;
+        [HideInInspector]
         public float hitDistance;
         public LayerMask layerMask;
 

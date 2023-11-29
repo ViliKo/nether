@@ -98,6 +98,7 @@ namespace StateMachine
                 _runner.SetState(typeof(JumpState));
             else if (_pressedJump && (_jumpBufferTimer < jumpBufferTime && _col.VerticalRaycasts(_cc, _rayHeight)))
             {
+                Debug.Log("I should have doulble jump");
                 _data.jumpsLeft = _data.maxJumps;
                 _runner.SetState(typeof(JumpState));
             }

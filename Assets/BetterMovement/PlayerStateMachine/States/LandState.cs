@@ -82,15 +82,21 @@ namespace StateMachine
 
         public override void ChangeState()
         {
+
+            if (_jump)
+            {
+                _runner.SetState(typeof(JumpState));
+                _landingExacuted = false;
+                _isLandingFinished = false;
+            }
+                
+
             if (_isLandingFinished)
             {
                 _landingExacuted = false;
                 _isLandingFinished = false;
-                _data.jumpsLeft = _data.maxJumps;
 
-                if (_jump)
-                    _runner.SetState(typeof(JumpState));
-                else if (Mathf.Abs(_xInput) > xInputTreshold)
+                if (Mathf.Abs(_xInput) > xInputTreshold)
                     _runner.SetState(typeof(WalkState));
                 else
                     _runner.SetState(typeof(IdleState));

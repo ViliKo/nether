@@ -6,6 +6,7 @@ TagManager:
   tags:
   - nonClimbable
   - freezeFrame
+  - Enemy
   layers:
   - Default
   - TransparentFX

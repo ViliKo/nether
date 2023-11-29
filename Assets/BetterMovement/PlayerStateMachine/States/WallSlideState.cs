@@ -23,12 +23,16 @@ namespace StateMachine
         public float rayHeight = .1f;
         public AnimationClip wallSlideAnimation;
         public bool visualizer = true;
+        public float selectedInputTreshold;
+        public float inputTreshold = .15f;
+        public float dashInputTreshold = .15f;
 
         [SerializeField]
         private float _rayHeight = .1f;
         private float _yInput;
         private bool _jump;
-        public float inputTreshold = .15f;
+        private bool _spiritState;
+        private float _dash;
         
 
 
@@ -48,7 +52,7 @@ namespace StateMachine
             #endregion
 
             _anim.ChangeAnimationState(wallSlideAnimation.name);
-            _data.jumpsLeft = _data.maxJumps;
+            _spiritState = false;
 
             if (visualizer)
                 _sr.color = Color.magenta;
@@ -58,6 +62,13 @@ namespace StateMachine
         {
             _yInput = Input.GetAxis("Vertical");
             _jump = Input.GetButtonDown("Jump");
+            _dash = Input.GetAxis("Dash");
+
+            if (Input.GetAxisRaw("Select") > selectedInputTreshold)
+            {
+                if (Input.GetKey(KeyCode.Joystick1Button3))
+                    _spiritState = true;
+            }
         }
 
 
@@ -83,6 +94,16 @@ namespace StateMachine
             {
                 _data.jumpsLeft -= 1;
                 _runner.SetState(typeof(FallState));
+            }
+            if (_spiritState)
+            {
+                _runner.ActivateAbility(typeof(SpiritModeEnterState), 10f);
+            }
+
+            if (_dash > dashInputTreshold)
+            {
+                _runner.ActivateAbility(typeof(DashState), _data.dashCooldown);
+                _rb.transform.localScale = new Vector2(-_rb.transform.localScale.x, _rb.transform.localScale.y);
             }
         }
 
