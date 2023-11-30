@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,7 +34,8 @@ namespace StateMachine
         private bool _jump;
         private bool _spiritState;
         private float _dash;
-        
+        private bool _dashedFromWall;
+
 
 
 
@@ -52,10 +54,14 @@ namespace StateMachine
             #endregion
 
             _anim.ChangeAnimationState(wallSlideAnimation.name);
-            _spiritState = false;
+
+            Reset();
+
 
             if (visualizer)
                 _sr.color = Color.magenta;
+
+
         }
 
         public override void CaptureInput()
@@ -74,7 +80,9 @@ namespace StateMachine
 
 
 
-        public override void Update() { }
+        public override void Update() {
+            Debug.Log("Dashed from a wall: " + _dashedFromWall + " this is supposed to be false");
+        }
 
         public override void FixedUpdate()
         {
@@ -95,19 +103,37 @@ namespace StateMachine
                 _data.jumpsLeft -= 1;
                 _runner.SetState(typeof(FallState));
             }
-            if (_spiritState)
+            else if (_spiritState)
             {
                 _runner.ActivateAbility(typeof(SpiritModeEnterState), 10f);
             }
-
-            if (_dash > dashInputTreshold)
+            else if (_dash > dashInputTreshold)
             {
+                _dashedFromWall = true;
                 _runner.ActivateAbility(typeof(DashState), _data.dashCooldown);
-                _rb.transform.localScale = new Vector2(-_rb.transform.localScale.x, _rb.transform.localScale.y);
+                _dashedFromWall = false;
             }
         }
 
-        public override void Exit() {}
+        public override void Exit() {
+            if (_dashedFromWall)
+            {
+                Debug.Log("Im here mother focker");
+                _rb.transform.localScale = new Vector2(-_rb.transform.localScale.x, _rb.transform.localScale.y);
+            }
+                
+
+            Reset();
+        }
+
+        private void Reset()
+        {
+            _spiritState = false;
+            _dashedFromWall = false;
+            _yInput = 0;
+            _jump = false;
+            _dash = 0;
+        }
     }
 }
 

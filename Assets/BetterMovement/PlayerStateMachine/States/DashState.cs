@@ -56,32 +56,11 @@ namespace StateMachine
 
         public override void Update()
         {
-            
-            
-
-            float newDashDistance;
-
-            if (_col.HorizontalRaycastsOriginBottomUp(-_sr.transform.localScale.x, _cc, dashDistance)) // jos on osunut collideriin
-            {
-                newDashDistance = _col.hitDistance; // niin dashin etaisyys on colliderin etaisyys viela pienennettyna
-
-                if (newDashDistance < 1)  // jos colliderin etaisyys on vahempi kuin kaksi ala sitten dashaa
-                    _isDashing = false;
-
-            }
-            else
-                newDashDistance = dashDistance;  // muuten dashaus on normaali
-
-
-
-
-
-
             if (_isDashing)
             {
                 float distanceTraveled = Mathf.Abs(_rb.position.x - _initialPositionX);
 
-                if (distanceTraveled < newDashDistance)
+                if (distanceTraveled < dashDistance)
                 {
                     _rb.AddForce(new Vector2(dashForce * -_sr.transform.localScale.x * _rb.mass, 0f), ForceMode2D.Impulse);
                     _anim.ChangeAnimationState("player-dash");
@@ -89,7 +68,6 @@ namespace StateMachine
                 else
                     StopDash();
             }
-
         }
 
         public override void FixedUpdate()
@@ -98,6 +76,13 @@ namespace StateMachine
 
         public override void ChangeState()
         {
+            if (_col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, rayHeight) && _col.HorizontalRaycastsOriginUpLower(-_sr.transform.localScale.x, _cc, rayHeight))
+            {
+                _data.jumpsLeft = _data.maxJumps;
+                _runner.SetState(typeof(WallSlideState));
+            }
+
+
             if (_isDashing) return;
 
             if (_col.VerticalRaycasts(_cc, rayHeight))
@@ -114,7 +99,7 @@ namespace StateMachine
         void StopDash()
         {
             _isDashing = false;
-            _rb.velocity = Vector2.zero;
+            _rb.velocity = new Vector2(_rb.velocity.x/3, _rb.velocity.y);
         }
     }
 

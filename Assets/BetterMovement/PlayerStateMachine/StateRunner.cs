@@ -69,7 +69,8 @@ namespace Utils.StateMachine
 
         public void SetState(Type newStateType, params object[] parameters)
         {
-            prevState = newStateType; // ota edellinen tila talteen, etta moden jalkeen voi palata siihen
+            if (!(_currentMode == CharacterMode.Spirit))
+                prevState = newStateType; // ota edellinen tila talteen, etta moden jalkeen voi palata siihen
 
             if (_activeState != null)
                 _activeState.Exit();
@@ -106,6 +107,7 @@ namespace Utils.StateMachine
             _activeState.CaptureInput();
             _activeState.Update();
             _cooldownManager.UpdateCooldowns();
+            _activeState.ChangeState();
 
             if (_currentMode == CharacterMode.Spirit)
             {
@@ -113,7 +115,7 @@ namespace Utils.StateMachine
                 if (_spiritModeTimer <= 0)
                     ExitSpiritMode();    
             }
-            _activeState.ChangeState();
+            
         }
 
         public void ExitSpiritMode()

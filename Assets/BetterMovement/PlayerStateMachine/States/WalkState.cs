@@ -55,7 +55,10 @@ namespace StateMachine
         public override void CaptureInput()
         {
 
-            _xInput = Input.GetAxis("Horizontal");
+            if (Mathf.Abs(Input.GetAxis("Horizontal")) >= xInputTreshold)
+                _xInput = Input.GetAxis("Horizontal");
+            else
+                _xInput = 0;
             _dash = Input.GetAxis("Dash");
             _jump = Input.GetButtonDown("Jump");
 

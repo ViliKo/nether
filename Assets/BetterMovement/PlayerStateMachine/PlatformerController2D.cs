@@ -67,7 +67,7 @@ namespace StateMachine {
         public bool HorizontalRaycastsOriginUpLower(float vectorDir, CapsuleCollider2D cc, float length)
         {
             Vector2 wallraycast = new Vector2(vectorDir, 0);
-            Vector3 originPosUpLower = new Vector3(cc.bounds.center.x, (cc.bounds.center.y + cc.bounds.extents.y - 0.2f), 0);
+            Vector3 originPosUpLower = new Vector3(cc.bounds.center.x, (cc.bounds.center.y + cc.bounds.extents.y - 0.3f), 0);
             return PerformRaycast(originPosUpLower, wallraycast, cc.bounds.extents.x + length);
         }
 

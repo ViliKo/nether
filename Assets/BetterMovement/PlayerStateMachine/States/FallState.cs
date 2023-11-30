@@ -20,7 +20,7 @@ namespace StateMachine
         [Header("Fall State settings")]
         public float xInputTreshold = .15f;
         public bool assistedOverCorner = false;
-        public float _rayHeight = .1f;
+        public float rayHeight = .1f;
         public float jumpBufferTime = .4f;
         public float moveMaxSpeed = 8f; //Target speed we want the player to reach. asd
         public float moveAcceleration = 8f; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
@@ -96,13 +96,13 @@ namespace StateMachine
 
             if (_data.jumpsLeft >= 1 && _jump)
                 _runner.SetState(typeof(JumpState));
-            else if (_pressedJump && (_jumpBufferTimer < jumpBufferTime && _col.VerticalRaycasts(_cc, _rayHeight)))
+            else if (_pressedJump && (_jumpBufferTimer < jumpBufferTime && _col.VerticalRaycasts(_cc, rayHeight)))
             {
                 Debug.Log("I should have doulble jump");
                 _data.jumpsLeft = _data.maxJumps;
                 _runner.SetState(typeof(JumpState));
             }
-            else if(_col.VerticalRaycasts(_cc, _rayHeight))
+            else if(_col.VerticalRaycasts(_cc, rayHeight))
             {
                 _data.jumpsLeft = _data.maxJumps;
                 _runner.SetState(typeof(LandState));
@@ -111,7 +111,8 @@ namespace StateMachine
             if (_dash > 0)
                 _runner.ActivateAbility(typeof(DashState), _data.dashCooldown);
 
-            if (_col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, _rayHeight) && _col.HorizontalRaycastsOriginUpLower(-_sr.transform.localScale.x, _cc, _rayHeight))
+            if (_col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, rayHeight) && 
+                _col.HorizontalRaycastsOriginUpLower(-_sr.transform.localScale.x, _cc, rayHeight))
             {
                 _data.jumpsLeft = _data.maxJumps;
                 _runner.SetState(typeof(WallSlideState));
@@ -147,7 +148,7 @@ namespace StateMachine
             _pressedJump = false;
             _enterSpiritState = false;
 
-        _rb.gravityScale = _data.baseGravityScale;
+            _rb.gravityScale = _data.baseGravityScale;
         }
     }
 }

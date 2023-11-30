@@ -44,6 +44,7 @@ namespace StateMachine
 
             #endregion
 
+            _data.jumpsLeft = _data.maxJumps;
             Reset();
         }
 
