@@ -5,7 +5,8 @@ using UnityEngine;
 namespace StateMachine { 
     public class PlatformerController2D : MonoBehaviour
     {
-        private Collider2D hit;
+        [HideInInspector]
+        public Collider2D hit;
         [HideInInspector]
         public float hitDistance;
         public LayerMask layerMask;
@@ -13,6 +14,8 @@ namespace StateMachine {
 
         private bool PerformRaycast(Vector3 origin, Vector2 direction, float length)
         {
+
+
             RaycastHit2D hitResult = Physics2D.Raycast(origin, direction, length, layerMask);
 
             if (hitResult.collider != null)

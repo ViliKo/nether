@@ -22,7 +22,8 @@ namespace StateMachine
         [Header("Wall Climb settings")]
         public float climbSpeed = 3f;
         public float inputTreshold = .15f;
-        public AnimationClip WallClimbAnimation;
+        public AnimationClip wallClimbAnimation;
+        public AnimationClip wallHoldAnimation;
         public bool visualizer = false;
         public float rayHeight = .1f;
 
@@ -98,10 +99,27 @@ namespace StateMachine
 
             if (!(positiveYInput == 0))  // laita se rigidbodyn nopeuteen
             {
-                _rb.velocity = new Vector2(0, positiveYInput * climbSpeed);
-                _anim.ChangeAnimationState(WallClimbAnimation.name);
-            }
-                
+                if (isClimbable())
+                {
+                    _rb.velocity = new Vector2(0, positiveYInput * climbSpeed);
+                    _anim.ChangeAnimationState(wallClimbAnimation.name);
+                }    
+                else
+                {
+                    _rb.velocity = Vector2.zero;
+                    _anim.ChangeAnimationState(wallHoldAnimation.name);
+                }
+            }       
+        }
+
+
+        private bool isClimbable()
+        {
+            _col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, rayHeight);
+            if (_col.hit.tag == "nonClimbable")
+                return false;
+            else
+                return true;
         }
 
 

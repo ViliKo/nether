@@ -81,18 +81,27 @@ namespace StateMachine
 
 
         public override void Update() {
-            Debug.Log("Dashed from a wall: " + _dashedFromWall + " this is supposed to be false");
+
         }
 
         public override void FixedUpdate()
         {
             _rb.velocity = new Vector2(0, -slideSpeed);
+
         }
 
+        private bool isClimbable()
+        {
+            _col.HorizontalRaycastsOriginUp(-_sr.transform.localScale.x, _cc, rayHeight);
+            if (_col.hit.tag == "nonClimbable")
+                return false;
+            else
+                return true;   
+        }
 
         public override void ChangeState()
         {
-            if (_yInput > inputTreshold)
+            if (_yInput > inputTreshold && isClimbable())
                 _runner.SetState(typeof(WallClimbState));
             else if (_col.VerticalRaycasts(_cc, _rayHeight)) 
                 _runner.SetState(typeof(IdleState));
