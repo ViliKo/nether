@@ -56,7 +56,7 @@ namespace StateMachine
         {
 
             if (Mathf.Abs(Input.GetAxis("Horizontal")) >= xInputTreshold)
-                _xInput = Input.GetAxis("Horizontal");
+                _xInput = Mathf.Sign(Input.GetAxis("Horizontal"));
             else
                 _xInput = 0;
             _dash = Input.GetAxis("Dash");
@@ -84,7 +84,7 @@ namespace StateMachine
         public override void ChangeState()
         {
        
-            if (Mathf.Abs(_rb.velocity.x) <= 0.3 && Mathf.Abs(_xInput) < xInputTreshold)
+            if (Mathf.Abs(_rb.velocity.x) <= 0.3 && Mathf.Abs(_xInput) < 1)
             {
                 _transitionReason.text = "Kavely -> horisonttaalinen nopeus oli vahemman kuin 0.02 -> Lepo";
                 _runner.SetState(typeof(IdleState));

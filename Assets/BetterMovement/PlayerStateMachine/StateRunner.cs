@@ -104,7 +104,8 @@ namespace Utils.StateMachine
 
         private void Update()
         {
-            _activeState.CaptureInput();
+            if (!PlayerUI.gameIsPaused)
+                _activeState.CaptureInput();
             _activeState.Update();
             _cooldownManager.UpdateCooldowns();
             _activeState.ChangeState();

@@ -55,7 +55,11 @@ namespace StateMachine
 
         public override void CaptureInput()
         {
-            _xInput = Input.GetAxis("Horizontal");
+            if (Mathf.Abs(Input.GetAxis("Horizontal")) >= xInputTreshold)
+                _xInput = Mathf.Sign(Input.GetAxis("Horizontal"));
+            else
+                _xInput = 0;
+
             _jump = Input.GetButtonDown("Jump");
 
             if (Input.GetAxisRaw("Select") > selectedInputTreshold)
@@ -97,7 +101,7 @@ namespace StateMachine
         public override void ChangeState()
         {
 
-            if (Mathf.Abs(_xInput) > xInputTreshold && _blockinObstacle == false) {
+            if (Mathf.Abs(_xInput) >= 1 && _blockinObstacle == false) {
                 _transitionReason.text = "Idle -> Inputtia on enemman kuin raja on ja ei ole estetta -> Walk";
                 _runner.SetState(typeof(WalkState));
             }

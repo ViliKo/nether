@@ -18,7 +18,7 @@ MonoBehaviour:
   coyoteTime: 0.2
   walkAnimation: {fileID: 7400000, guid: ca564680d8b728f46acf81749e92a708, type: 2}
   slideAnimation: {fileID: 7400000, guid: bd96ff4f3782ce04fa2c169740157360, type: 2}
-  runMaxSpeed: 8
+  runMaxSpeed: 6
   runAcceleration: 2
   runDecceleration: 1
   selectedInputTreshold: 0.15

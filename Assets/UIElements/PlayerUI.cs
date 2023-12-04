@@ -6,6 +6,10 @@ using StateMachine;
 
 public class PlayerUI : MonoBehaviour, ICooldownObserver
 {
+    public static bool gameIsPaused = false;
+    public GameObject pauseMenuUI;
+
+
     private Image dashImage;
     private Image spiritModeImage;
 
@@ -56,6 +60,32 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
             spiritCooldownTimer -= Time.deltaTime;
             UpdateCooldownUI(spiritModeImage, spiritCooldownTimer, spiritCooldownDuration, ref spiritCooldownTriggered);
         }
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button7))
+        {
+            if (gameIsPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
+        }
+    }
+
+    private void Resume ()
+    {
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        gameIsPaused = false;
+    }
+
+    private void Pause ()
+    {
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        gameIsPaused = true;
     }
 
     void UpdateCooldownUI(Image cooldownImage, float cooldownTimer, float cooldownDuration, ref bool cooldownTriggered)
