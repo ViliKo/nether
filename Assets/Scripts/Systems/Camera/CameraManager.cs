@@ -16,12 +16,12 @@ public class CameraManager : MonoBehaviour
 
     public List<CinemachineVirtualCamera> VirtualCameraList;
     public CinemachineVirtualCamera currentCamera;
-    public Player playerScript;
+    //public Player playerScript;
     CinemachineFramingTransposer transposer;
 
     private void Awake() {
-        if(GameObject.FindWithTag ("Player") != null)
-                playerScript = GameObject.FindWithTag ("Player").GetComponent<Player>();
+        //if(GameObject.FindWithTag ("Player") != null)
+               // playerScript = GameObject.FindWithTag ("Player").GetComponent<Player>();
 
 
     }
@@ -80,20 +80,20 @@ public class CameraManager : MonoBehaviour
             cameraFromLeft.enabled = false;
 
             currentCamera = cameraFromRight;
-            playerScript.currentVirtualCamera = cameraFromRight;
+            //playerScript.currentVirtualCamera = cameraFromRight;
 
         }
 
         if(currentCamera == cameraFromRight  && triggerExitDirection.x < 0)
         {
 
-            Debug.Log("player current camera" + cameraFromRight + playerScript.currentVirtualCamera);
+            //Debug.Log("player current camera" + cameraFromRight + playerScript.currentVirtualCamera);
             cameraFromLeft.enabled = true;
 
             cameraFromRight.enabled = false;
 
             currentCamera = cameraFromLeft;
-            playerScript.currentVirtualCamera = cameraFromLeft;
+            //playerScript.currentVirtualCamera = cameraFromLeft;
 
         }
     }

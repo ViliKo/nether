@@ -7,7 +7,10 @@ namespace CompositeStateRunner
     {
         protected T _aiController;
 
-        public virtual void Init(T aiController) => _aiController = aiController;
+        public virtual void Init(T aiController) {
+            _aiController = aiController;
+
+        }
 
         public abstract void Enter();
         public abstract void Update();

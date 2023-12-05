@@ -81,10 +81,11 @@ namespace StateMachine
         {
             if (!_isOnGround && _rb.velocity.y < 0)
                 _runner.SetState(typeof(FallState));
-            if (_isOnGround && _rb.velocity.x < 1f)
-                _runner.SetState(typeof(IdleState));
-            if (_isOnGround && _rb.velocity.x > 1f)
-                _runner.SetState(typeof(WalkState));
+            if (_isOnGround)
+            {
+                _data.jumpsLeft = _data.maxJumps;
+                _runner.SetState(typeof(LandState));
+            }
             if (_data.jumpsLeft >= 1 && _jump)
                 _runner.SetState(typeof(JumpState));
             if (_dash > 0)

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CompositeStateRunner
 {
 
-    [CreateAssetMenu(menuName = "AI/ManiacSearchState")]
+    [CreateAssetMenu(menuName = "AI/Search/ManiacSearchState")]
     public class ManiacSearchState : AIState<AIBaseController>
     {
         [SerializeField] private float searchDuration = 5f;

@@ -34,7 +34,7 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
                 spiritModeImage = cooldownImageSearched;
         }
 
-        Debug.Log(spiritModeImage);
+       // Debug.Log(spiritModeImage);
 
         dashImage.fillAmount = 1;
         spiritModeImage.fillAmount = 1;

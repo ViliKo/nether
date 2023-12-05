@@ -10,45 +10,46 @@ namespace CompositeStateRunner
         [SerializeField] AIState<AIBaseController> _chaseState;
         [SerializeField] AIState<AIBaseController> _attackState;
 
-        private AIState<AIBaseController> _activeSearchState;
-        private AIState<AIBaseController> _activeChaseState;
-        private AIState<AIBaseController> _activeAttackState;
+        private AIState<AIBaseController> _activeState;
+
+        public AIAnimation AIAnimation;
+
 
         private void Start()
         {
+            AIAnimation = new AIAnimation(GetComponent<Animator>(), transform);
             // Initialize with default states
             SetSearchState();
         }
 
         private void Update()
         {
-            _activeSearchState?.Update();
-            _activeChaseState?.Update();
-            _activeAttackState?.Update();
+            _activeState?.Update();
+
         }
 
         public void SetSearchState()
         {
-            _activeSearchState?.Exit();
-            _activeSearchState = _searchState;
-            _activeSearchState?.Init(this);
-            _activeSearchState?.Enter();
+            _activeState?.Exit();
+            _activeState = _searchState;
+            _activeState?.Init(this);
+            _activeState?.Enter();
         }
 
         public void SetChaseState()
         {
-            _activeChaseState?.Exit();
-            _activeChaseState = _chaseState;
-            _activeChaseState?.Init(this);
-            _activeChaseState?.Enter();
+            _activeState?.Exit();
+            _activeState = _chaseState;
+            _activeState?.Init(this);
+            _activeState?.Enter();
         }
 
         public void SetAttackState()
         {
-            _activeAttackState?.Exit();
-            _activeAttackState = _attackState;
-            _activeAttackState?.Init(this);
-            _activeAttackState?.Enter();
+            _activeState?.Exit();
+            _activeState = _attackState;
+            _activeState?.Init(this);
+            _activeState?.Enter();
         }
     }
 }

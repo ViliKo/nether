@@ -48,7 +48,7 @@ namespace StateMachine
             if (_transitionReason == null) _transitionReason = parent.StateTransition;
 
             #endregion
-
+            _data.jumpsLeft = _data.maxJumps;
             Reset();
         }
 

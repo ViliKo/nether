@@ -49,6 +49,7 @@ namespace StateMachine
 
             Reset();
 
+            _data.jumpsLeft = _data.maxJumps;
             _rb.velocity = Vector2.zero;
             _anim.ChangeAnimationState(idleAnimation.name);
         }

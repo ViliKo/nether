@@ -43,7 +43,7 @@ namespace Utils.StateMachine
 
         private void OnCooldownStarted(Type abilityType, float cooldownTime)
         {
-            Debug.Log("Event triggered form state runner");
+            //Debug.Log("Event triggered form state runner");
             // You can add more information to this event if needed
             // For example, you might want to know which ability is on cooldown
         }
