@@ -83,27 +83,6 @@ namespace CompositeStateRunner
             }
         }
 
-        private bool RaycastHitLeft()
-        {
-            Vector2 localBottomLeft = new Vector2(_bc.offset.x - _bc.size.x / 2f, _bc.offset.y - _bc.size.y / 2f);
-
-            Vector2 bottomLeftCorner = (Vector2)_aiController.transform.TransformPoint(localBottomLeft);
-
-            RaycastHit2D hit = Physics2D.Raycast(bottomLeftCorner, Vector2.down, .1f);
-
-            if (hit.collider != null)
-            {
-                Debug.DrawRay(new Vector3(bottomLeftCorner.x, bottomLeftCorner.y, 0), new Vector3(0, -.1f, 0), Color.green);
-                return true;
-            }
-            else 
-            {
-
-                Debug.DrawRay(new Vector3(bottomLeftCorner.x, bottomLeftCorner.y, 0), new Vector3(0, -.1f, 0), Color.red);
-                return false; 
-            }
-
-        }
     }
 }
 

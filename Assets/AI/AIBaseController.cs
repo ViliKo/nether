@@ -15,8 +15,9 @@ namespace CompositeStateRunner
         public AIAnimation AIAnimation;
 
 
-        private void Start()
+        private void Awake()
         {
+            Debug.Log("how many instances are there");
             AIAnimation = new AIAnimation(GetComponent<Animator>(), transform);
             // Initialize with default states
             SetSearchState();
@@ -31,7 +32,7 @@ namespace CompositeStateRunner
         public void SetSearchState()
         {
             _activeState?.Exit();
-            _activeState = _searchState;
+            _activeState = Instantiate(_searchState);
             _activeState?.Init(this);
             _activeState?.Enter();
         }
@@ -39,7 +40,7 @@ namespace CompositeStateRunner
         public void SetChaseState()
         {
             _activeState?.Exit();
-            _activeState = _chaseState;
+            _activeState = Instantiate(_chaseState);
             _activeState?.Init(this);
             _activeState?.Enter();
         }
@@ -47,7 +48,7 @@ namespace CompositeStateRunner
         public void SetAttackState()
         {
             _activeState?.Exit();
-            _activeState = _attackState;
+            _activeState = Instantiate(_attackState);
             _activeState?.Init(this);
             _activeState?.Enter();
         }

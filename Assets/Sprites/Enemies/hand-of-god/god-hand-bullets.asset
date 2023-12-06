@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 836cf40d102994f48b0d71de31e82071, type: 3}
+  m_Name: god-hand-bullets
+  m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 1363158167682775240, guid: 8b496e42393b2dd408962dfacef1aace, type: 3}
+  numberOfBullets: 11
+  radius: 2
+  bulletSpeed: 10
+  shootAnimation: {fileID: 7400000, guid: 1b28ddbed50e09548be8c112860c6c80, type: 2}
+  reloadAnimation: {fileID: 7400000, guid: 190aad02cb713f84f9ba899094dbfb6a, type: 2}

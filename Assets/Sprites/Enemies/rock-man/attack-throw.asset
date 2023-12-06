@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6d4bf593f358e349bd797b54be96775, type: 3}
+  m_Name: attack-throw
+  m_EditorClassIdentifier: 
+  rockPrefab: {fileID: 3607930382596695759, guid: 10c4052f1e1b8ee49ae681d6e7ccfd4e, type: 3}
+  throwAnimation: {fileID: 7400000, guid: 0e827db268bb80a4782acbbd1b4c596b, type: 2}
+  throwEndAnimation: {fileID: 7400000, guid: f5ef44f5e9ffdde44b6e8d4ed18ea721, type: 2}
