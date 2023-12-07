@@ -15,7 +15,7 @@ TagManager:
   - Water
   - UI
   - SlippySides
-  - 
+  - VisionField
   - 
   - 
   - 
@@ -43,4 +43,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: lights-on
+    uniqueID: 981578561
+    locked: 0
+  - name: lights-off
+    uniqueID: 2239521317
     locked: 0

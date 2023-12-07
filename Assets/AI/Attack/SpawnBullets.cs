@@ -13,6 +13,7 @@ namespace CompositeStateRunner
         public float radius = 20f;
         public float bulletSpeed = 5f;
         private AIAnimation _anim;
+        private VisionField _vf;
 
         public AnimationClip shootAnimation;
         public AnimationClip reloadAnimation;
@@ -24,6 +25,7 @@ namespace CompositeStateRunner
         public override void Enter()
         {
             if (_anim == null) _anim = _aiController.AIAnimation;
+            if (_vf == null) _vf = _aiController.GetComponentInChildren<VisionField>();
 
             InitializeBulletPool();
             SpawnBulletsInCircle();
@@ -49,6 +51,10 @@ namespace CompositeStateRunner
                 SpawnBulletsInCircle();
                 _anim.ChangeAnimationState(shootAnimation.name);
             }
+
+
+            if (!_vf.IseePlayer())
+                _aiController.SetSearchState();
         }
 
 

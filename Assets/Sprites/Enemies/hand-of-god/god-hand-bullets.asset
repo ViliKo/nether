@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 1363158167682775240, guid: 8b496e42393b2dd408962dfacef1aace, type: 3}
   numberOfBullets: 11
-  radius: 2
-  bulletSpeed: 10
+  radius: 1
+  bulletSpeed: 3
   shootAnimation: {fileID: 7400000, guid: 1b28ddbed50e09548be8c112860c6c80, type: 2}
   reloadAnimation: {fileID: 7400000, guid: 190aad02cb713f84f9ba899094dbfb6a, type: 2}
