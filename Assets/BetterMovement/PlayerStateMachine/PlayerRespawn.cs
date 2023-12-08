@@ -1,5 +1,6 @@
 using UnityEngine;
 using StateMachine;
+using UnityEngine.SceneManagement;
 
 namespace Utils.StateMachine { 
 
@@ -9,12 +10,49 @@ namespace Utils.StateMachine {
         public CheckpointManager checkpointManager;
 
         private CharacterMode characterMode;
-
+        [SerializeField] private float timeUntilRespawn = 4f;
+        private float timer;
+        private bool startTimer = false;
 
         private void Start()
         {
+            
 
             PlayerController.ModeChanged += ModeChanged;
+        }
+
+        private void Update()
+        {
+            if (startTimer)
+            {
+                timer += Time.deltaTime;
+                playerController.SetState(typeof(OnHurtState));
+            }
+                
+
+            if (timer > timeUntilRespawn)
+            {
+                timer = 0;
+                startTimer = false;
+
+                
+                
+
+                if (characterMode == CharacterMode.Spirit)
+                {
+                    playerController.SetState(typeof(FallState));
+                    playerController.ExitSpiritMode();
+                }
+                    
+                
+                else
+                {
+                    SceneManager.LoadScene("MainMenu");
+                    //transform.position = checkpointManager.GetActiveCheckpointPosition(); //talla tehdaan oikeasti
+                }
+                    
+
+            }
         }
 
 
@@ -23,18 +61,9 @@ namespace Utils.StateMachine {
         {
             if (collision.CompareTag("Enemy"))
             {
-                if (characterMode == CharacterMode.Spirit)
-                {
+                startTimer = true;
+
                 
-                    Debug.Log("I have collided");
-                    playerController.ExitSpiritMode();
-
-
-                    //playerController.SetState(typeof(OnHurtState), damageAmount);
-                } else
-                {
-                    transform.position = checkpointManager.GetActiveCheckpointPosition();
-                }
             }
             
         }

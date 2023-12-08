@@ -3,12 +3,12 @@ using UnityEngine.UI;
 using System;
 using Utils.StateMachine;
 using StateMachine;
+using UnityEngine.SceneManagement;
 
 public class PlayerUI : MonoBehaviour, ICooldownObserver
 {
     public static bool gameIsPaused = false;
     public GameObject pauseMenuUI;
-
 
     private Image dashImage;
     private Image spiritModeImage;
@@ -24,6 +24,8 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
 
     void Start()
     {
+        Resume();
+
         Image[] cooldownImages = GetComponentsInChildren<Image>();
 
         foreach (Image cooldownImageSearched in cooldownImages)
@@ -34,7 +36,6 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
                 spiritModeImage = cooldownImageSearched;
         }
 
-       // Debug.Log(spiritModeImage);
 
         dashImage.fillAmount = 1;
         spiritModeImage.fillAmount = 1;
@@ -49,6 +50,12 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
 
     private void Update()
     {
+        CooldownUpdate();
+        PauseControl();
+    }
+
+    private void CooldownUpdate()
+    {
         if (dashCooldownTriggered)
         {
             dashCooldownTimer -= Time.deltaTime;
@@ -60,33 +67,8 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
             spiritCooldownTimer -= Time.deltaTime;
             UpdateCooldownUI(spiritModeImage, spiritCooldownTimer, spiritCooldownDuration, ref spiritCooldownTriggered);
         }
-
-        if (Input.GetKeyDown(KeyCode.Joystick1Button7))
-        {
-            if (gameIsPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
-        }
     }
 
-    private void Resume ()
-    {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
-        gameIsPaused = false;
-    }
-
-    private void Pause ()
-    {
-        pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;
-        gameIsPaused = true;
-    }
 
     void UpdateCooldownUI(Image cooldownImage, float cooldownTimer, float cooldownDuration, ref bool cooldownTriggered)
     {
@@ -116,4 +98,40 @@ public class PlayerUI : MonoBehaviour, ICooldownObserver
 
         Debug.Log("triggered from ui");
     }
+
+    private void PauseControl()
+    {
+        if (Input.GetKeyDown(KeyCode.Joystick1Button7))
+        {
+            if (gameIsPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
+        }
+    }
+
+    private void Resume()
+    {
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        gameIsPaused = false;
+    }
+
+    private void Pause()
+    {
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f;
+        gameIsPaused = true;
+    }
+
+    public void LoadMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
 }
+

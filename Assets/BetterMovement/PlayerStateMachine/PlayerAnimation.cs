@@ -18,7 +18,7 @@ namespace StateMachine
 
         public void ChangeAnimationState(string newState)
         {
-            if (_currentState == newState) return;
+            if (_currentState == newState || _anim == null) return;
 
             _anim.Play(newState);
             _currentState = newState;

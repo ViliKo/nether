@@ -8,10 +8,17 @@ namespace StateMachine
         private float hurtDuration = 2.0f;
         private float hurtTimer;
         private int damageTaken;
+        private Rigidbody2D _rb;
+        //private PlayerAnimation _anim;
 
         public override void Init(PlayerController parent, CharacterMode characterMode)
         {
             base.Init(parent, characterMode);
+            if (_rb == null) _rb = parent.GetComponent<Rigidbody2D>();
+            //if (_anim == null) _anim = parent.PlayerAnimation;
+
+            _rb.velocity = Vector2.zero;
+            _rb.gravityScale = 0;
         }
 
         public override void SetParameters(params object[] parameters)
@@ -20,6 +27,8 @@ namespace StateMachine
             {
                 damageTaken = (int)parameters[0];
             }
+
+
 
             hurtTimer = hurtDuration;
             Debug.Log($"Player took {damageTaken} damage!");
