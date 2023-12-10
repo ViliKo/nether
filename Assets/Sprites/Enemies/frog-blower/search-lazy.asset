@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: search-lazy
   m_EditorClassIdentifier: 
   blowAnimation: {fileID: 7400000, guid: 7e05526c1ae90af4ebb21ab85bab57fa, type: 2}
+  iSeePlayerAudio: {fileID: 8300000, guid: 6923511dbc99cb54283762d5d69cb043, type: 3}
   idleAnimation: {fileID: 7400000, guid: 79fd9b6321165314c896173193a5fc05, type: 2}

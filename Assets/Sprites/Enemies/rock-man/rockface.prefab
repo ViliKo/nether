@@ -146,6 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 8391437296450693698, guid: 4ded903c5d17eb2458497d9576eb3794, type: 3}
+  hitSound: {fileID: 8300000, guid: a280e73b10da25d41a25eb163c802ccf, type: 3}
   layerMask:
     serializedVersion: 2
     m_Bits: 8

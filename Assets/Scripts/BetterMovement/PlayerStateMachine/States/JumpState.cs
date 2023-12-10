@@ -93,9 +93,9 @@ namespace StateMachine
             if (_dash > 0)
                 _runner.ActivateAbility(typeof(DashState), _data.dashCooldown);
 
-            if (_enterSpiritState)
+            if (_enterSpiritState && _data.hasSpiritAbility)
             {
-                _runner.ActivateAbility(typeof(SpiritModeEnterState), 10f);
+                _runner.ActivateAbility(typeof(SpiritModeEnterState), _data.spiritAbilityCooldown, _data.spiritAbilityLength);
             }
 
         }

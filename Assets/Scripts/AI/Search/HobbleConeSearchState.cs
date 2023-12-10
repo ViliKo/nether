@@ -11,10 +11,12 @@ namespace CompositeStateRunner
         private BoxCollider2D _bc;
         private Rigidbody2D _rb;
         private SpriteRenderer _sr;
+        private AudioEntity _audio;
         private AIAnimation _anim;
         public float walkSpeed = 10f;
         public AnimationClip walkStart;
         public AnimationClip walkEnd;
+        [SerializeField] private AudioClip walkSound;
         public LayerMask land;
         int layerToIgnore;
 
@@ -26,10 +28,12 @@ namespace CompositeStateRunner
             if (_rb == null) _rb = _aiController.GetComponent<Rigidbody2D>();
             if (_sr == null) _sr = _aiController.GetComponent<SpriteRenderer>();
             if (_vf == null) _vf = _aiController.GetComponentInChildren<VisionField>();
+            if (_audio == null) _audio = _aiController.audioEntity;
             if (_anim == null) _anim = _aiController.AIAnimation;
 
             layerToIgnore = ~LayerMask.GetMask("VisionField");
             _anim.ChangeAnimationState(walkStart.name);
+            _audio.PlayState(walkSound, 2f, false, true);
         }
 
 

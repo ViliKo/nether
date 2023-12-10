@@ -111,9 +111,9 @@ namespace StateMachine
                 _data.jumpsLeft -= 1;
                 _runner.SetState(typeof(FallState));
             }
-            else if (_spiritState)
+            else if (_spiritState && _data.hasSpiritAbility)
             {
-                _runner.ActivateAbility(typeof(SpiritModeEnterState), 10f);
+                _runner.ActivateAbility(typeof(SpiritModeEnterState), _data.spiritAbilityCooldown, _data.spiritAbilityLength);
             }
             else if (_dash > dashInputTreshold)
             {

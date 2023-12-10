@@ -5,6 +5,7 @@ using UnityEngine;
 public class ThrowedRock : MonoBehaviour
 {
     public GameObject enemy;  // Reference to the enemy GameObject with BoxCollider2D
+    [SerializeField] private AudioClip hitSound;
     public LayerMask layerMask;
     private float _timer;
     private bool _collided;
@@ -18,7 +19,7 @@ public class ThrowedRock : MonoBehaviour
     {
         Debug.Log("im here man and");
         // Ignore collisions between GameObjects with "Player" and "Enemy" tags
-        Physics2D.IgnoreCollision(GetComponent<BoxCollider2D>(), enemy.GetComponent<BoxCollider2D>());
+        //Physics2D.IgnoreCollision(GetComponent<BoxCollider2D>(), enemy.GetComponent<BoxCollider2D>());
         _timer = 0;
 
 
@@ -46,6 +47,10 @@ public class ThrowedRock : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.name == enemy.name) return;
+        Debug.Log("I've collided with what: " + collision.gameObject);
+
+        AudioManager.Instance.PlaySound(hitSound, transform.position, 1, .5f);
         _collided = true;
     }
 

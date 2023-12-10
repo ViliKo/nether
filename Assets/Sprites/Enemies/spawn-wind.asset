@@ -15,3 +15,4 @@ MonoBehaviour:
   windPrefab: {fileID: 7094801972502006648, guid: 6d13b83812d700942a82df578b50cce9, type: 3}
   windDuration: 2
   effectEndAnimation: {fileID: 7400000, guid: ab410a2a224f32c459bd122d0558a103, type: 2}
+  spawnWindAudio: {fileID: 8300000, guid: 11bd5579613c5b347a13c0d13a7e1a4d, type: 3}

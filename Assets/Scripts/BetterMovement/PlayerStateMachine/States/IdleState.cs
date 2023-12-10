@@ -124,9 +124,9 @@ namespace StateMachine
                 _runner.SetState(typeof(FallState));
             }
 
-            if (_spiritState)
+            if (_spiritState && _data.hasSpiritAbility)
             {
-                _runner.ActivateAbility(typeof(SpiritModeEnterState), 10f);
+                _runner.ActivateAbility(typeof(SpiritModeEnterState), _data.spiritAbilityCooldown, _data.spiritAbilityLength);
             }
 
         }

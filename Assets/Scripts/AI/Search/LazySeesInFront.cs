@@ -9,13 +9,16 @@ namespace CompositeStateRunner
     {
         private VisionField _vf;
         private AIAnimation _anim;
+        private AudioEntity _audio;
         [SerializeField] private AnimationClip blowAnimation;
+        [SerializeField] private AudioClip iSeePlayerAudio;
         [SerializeField] private AnimationClip idleAnimation;
 
         public override void Enter()
         {
             if (_vf == null) _vf = _aiController.GetComponentInChildren<VisionField>();
             if (_anim == null) _anim = _aiController.AIAnimation;
+            if (_audio == null) _audio = _aiController.audioEntity;
 
             _anim.ChangeAnimationState(idleAnimation.name);
 
@@ -26,7 +29,7 @@ namespace CompositeStateRunner
             if (_vf.IseePlayer())
             {
                 _anim.ChangeAnimationState(blowAnimation.name);
-                Debug.Log("isee playeraeraer");
+                _audio.PlayState(iSeePlayerAudio, 1.3f);
       
             } else
             {

@@ -13,16 +13,16 @@ namespace Utils.StateMachine
         [SerializeField]
         private List<State<T>> _states;
         private State<T> _activeState;
+        private Type prevState;
         private CooldownManager _cooldownManager;
-        private CharacterMode _currentMode = CharacterMode.Normal;
 
+
+        // tama kannattaisi siirtaa muualle loogisesti
+        private CharacterMode _currentMode = CharacterMode.Normal;
         private bool _teleportToPrevLocation;
         protected Vector2 _startPosition;
         protected float _startDirection;
-        private Type prevState;
-
         private float _spiritModeTimer = 0f;
-        private float _spiritModeDuration = 10f; 
         private SpriteRenderer _sr;
         private Material _baseMaterial;
 
@@ -30,15 +30,14 @@ namespace Utils.StateMachine
 
         protected virtual void Awake()
         {
-            _teleportToPrevLocation = false;
-
-            _cooldownManager = new CooldownManager();
-            _sr = GetComponent<SpriteRenderer>();
-            _baseMaterial = _sr.material;
-
-            CooldownManager.CooldownStarted += OnCooldownStarted;
 
             SetState(_states[0].GetType());
+            _cooldownManager = new CooldownManager();
+            CooldownManager.CooldownStarted += OnCooldownStarted;
+
+            _teleportToPrevLocation = false;
+            _sr = GetComponent<SpriteRenderer>();
+            _baseMaterial = _sr.material;
         }
 
         private void OnCooldownStarted(Type abilityType, float cooldownTime)
@@ -88,7 +87,11 @@ namespace Utils.StateMachine
             if (!_cooldownManager.IsAbilityOnCooldown(abilityType))
             {
                 if (abilityType == typeof(SpiritModeEnterState))
+                {
                     EnterSpiritState();
+                    _spiritModeTimer = (float)parameters[0];
+                }
+                    
                 
 
                 SetState(abilityType, parameters);
@@ -131,7 +134,6 @@ namespace Utils.StateMachine
         public void EnterSpiritState()
         {
             SetMode(CharacterMode.Spirit);
-            _spiritModeTimer = _spiritModeDuration;
             _startDirection = transform.localScale.x;
             _startPosition = transform.position;
         }

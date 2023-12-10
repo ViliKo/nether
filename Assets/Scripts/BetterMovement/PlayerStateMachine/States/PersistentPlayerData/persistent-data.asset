@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 371d390fd2e59164fa74efc1beadbff2, type: 3}
   m_Name: persistent-data
   m_EditorClassIdentifier: 
-  maxJumps: 2
-  jumpsLeft: 2
-  dashCooldown: 1.2
   baseGravityScale: 2
+  maxJumps: 2
+  dashCooldown: 1.2
+  hasSpiritAbility: 0
+  spiritAbilityCooldown: 20
+  spiritAbilityLength: 8
   dir: 1
+  jumpsLeft: 2

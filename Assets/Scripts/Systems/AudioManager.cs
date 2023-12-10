@@ -13,7 +13,8 @@ public class AudioManager : MonoBehaviour
     private AudioSource layerPlayer;
 
 
-    [SerializeField] private float audioEntityVolume = .5f;
+    [Range(0.0f, 1.0f)] public float soundtrackVolume = 1f;
+    [Range(0.0f, 1.0f)] public float audioEntityVolume = 1f;
 
     public static AudioManager Instance
     {
@@ -55,7 +56,6 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySound(AudioClip clip, Vector3 initialPosition, int maxConcurrentInstances = 3, float volume = 1)
     {
-        if (currentAudioClip == clip) return;
 
         if (clip == null)
         {
@@ -63,7 +63,7 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        currentAudioClip = clip;
+
 
         // Check if the audio clip is already playing the maximum allowed instances
         if (playingInstances.ContainsKey(clip) && playingInstances[clip].Count >= maxConcurrentInstances)
@@ -90,7 +90,31 @@ public class AudioManager : MonoBehaviour
         playingInstances[clip].Add(audioSource);
 
         // Destroy the audio object after the clip has finished playing
-        Destroy(audioObject, clip.length);
+        StartCoroutine(DestroyAudioObjectDelayed(audioObject, clip.length));
+
+    }
+
+    private System.Collections.IEnumerator DestroyAudioObjectDelayed(GameObject audioObject, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Remove the AudioSource from the list
+        AudioSource audioSource = audioObject.GetComponent<AudioSource>();
+        AudioClip clipToRemove = audioSource.clip;
+
+        if (playingInstances.ContainsKey(clipToRemove))
+        {
+            playingInstances[clipToRemove].Remove(audioSource);
+
+            // If there are no more instances of this clip, remove it from the dictionary
+            if (playingInstances[clipToRemove].Count == 0)
+            {
+                playingInstances.Remove(clipToRemove);
+            }
+        }
+
+        // Destroy the audio object
+        Destroy(audioObject);
     }
 
     public void UpdateSoundPosition(Vector3 newPosition)
@@ -104,6 +128,7 @@ public class AudioManager : MonoBehaviour
     private void LayerPlayer(AudioClip clip)
     {
         layerPlayer.clip = clip;
+        layerPlayer.volume = soundtrackVolume;
         layerPlayer.loop = true;
         layerPlayer.Play();
     }

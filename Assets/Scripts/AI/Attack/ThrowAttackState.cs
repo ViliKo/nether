@@ -12,7 +12,9 @@ namespace CompositeStateRunner
         public GameObject rockPrefab;
         private AIAnimation _anim;
         private Rigidbody2D _rb;
+        private AudioEntity _audio;
         public AnimationClip throwAnimation;
+        [SerializeField] private AudioClip throwStartSound;
         public AnimationClip throwEndAnimation;
         private VisionField _vf;
         private BoxCollider2D _bc;
@@ -25,9 +27,11 @@ namespace CompositeStateRunner
             if (_vf == null) _vf = _aiController.GetComponentInChildren<VisionField>();
             if (_bc == null) _bc = _aiController.GetComponent<BoxCollider2D>();
             if (_sr == null) _sr = _aiController.GetComponent<SpriteRenderer>();
+            if (_audio == null) _audio = _aiController.audioEntity;
 
             _rb.velocity = Vector2.zero;
 
+            _audio.PlayState(throwStartSound, 2f);
             _anim.ChangeAnimationState(throwAnimation.name);
         }
 

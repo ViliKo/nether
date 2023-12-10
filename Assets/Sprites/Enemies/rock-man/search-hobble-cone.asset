@@ -15,6 +15,7 @@ MonoBehaviour:
   walkSpeed: 50
   walkStart: {fileID: 7400000, guid: 98d119cf1417d63429ec5c05a91803ac, type: 2}
   walkEnd: {fileID: 7400000, guid: 92882d38e7ee6c341bdfcd61dee20722, type: 2}
+  walkSound: {fileID: 8300000, guid: 5a24ea09477ed4c49b4a076ca502ca92, type: 3}
   land:
     serializedVersion: 2
     m_Bits: 8

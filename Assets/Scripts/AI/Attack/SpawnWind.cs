@@ -7,12 +7,14 @@ namespace CompositeStateRunner
     [CreateAssetMenu(menuName = "AI/Attack/SpawnWind")]
     public class SpawnWind : AIState<AIBaseController>
     {
+        private AudioEntity _audio;
         public GameObject windPrefab; // Reference to your wind prefab
         public float windDuration = 2f; // Duration of the wind effect
         private BoxCollider2D _bc;
         private SpriteRenderer _sr;
         private AIAnimation _anim;
         public AnimationClip effectEndAnimation;
+        [SerializeField] private AudioClip spawnWindAudio;
 
         Quaternion flippedRotation = Quaternion.Euler(0f, 0f, 180f);
 
@@ -24,9 +26,11 @@ namespace CompositeStateRunner
             if (_bc == null) _bc = _aiController.GetComponent<BoxCollider2D>();
             if (_sr == null) _sr = _aiController.GetComponent<SpriteRenderer>();
             if (_anim == null) _anim = _aiController.AIAnimation;
+            if (_audio == null) _audio = _aiController.audioEntity;
 
             normalRotation = _aiController.transform.rotation;
 
+            _audio.PlayState(spawnWindAudio,1f);
 
             if (_sr.transform.localScale.x == -1)
             {

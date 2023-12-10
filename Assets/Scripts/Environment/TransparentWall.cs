@@ -6,7 +6,7 @@ public class TransparentWall : MonoBehaviour
 {
     public Material transparentMaterial;
     private Material originalMaterial;
-    private bool isPlayerInside = false;
+
 
     void Start()
     {
@@ -18,24 +18,15 @@ public class TransparentWall : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            isPlayerInside = true;
             UpdateMaterial();
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInside = false;
-            UpdateMaterial();
-        }
-    }
 
     private void UpdateMaterial()
     {
         // Use transparent material if the player is inside, otherwise use the original material
-        Material targetMaterial = isPlayerInside ? transparentMaterial : originalMaterial;
+        Material targetMaterial = transparentMaterial;
         GetComponent<SpriteRenderer>().material = targetMaterial;
     }
 }
