@@ -53,10 +53,9 @@ namespace StateMachine
 
             #endregion
 
-            _anim.ChangeAnimationState(wallSlideAnimation.name);
-
             Reset();
 
+            
 
             if (visualizer)
                 _sr.color = Color.magenta;
@@ -81,7 +80,7 @@ namespace StateMachine
 
 
         public override void Update() {
-
+            _anim.ChangeAnimationState(wallSlideAnimation.name);
         }
 
         public override void FixedUpdate()

@@ -18,6 +18,8 @@ MonoBehaviour:
   coyoteTime: 0.2
   walkAnimation: {fileID: 7400000, guid: ca564680d8b728f46acf81749e92a708, type: 2}
   slideAnimation: {fileID: 7400000, guid: bd96ff4f3782ce04fa2c169740157360, type: 2}
+  walkSound: {fileID: 8300000, guid: a8aa2a5b83a1f2847be4134e09f59aad, type: 3}
+  slideSound: {fileID: 8300000, guid: cf51b7431ed19c848b052fab21fddb6b, type: 3}
   runMaxSpeed: 6
   runAcceleration: 2
   runDecceleration: 1

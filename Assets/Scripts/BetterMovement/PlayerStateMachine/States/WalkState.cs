@@ -12,6 +12,7 @@ namespace StateMachine
         private PersistentPlayerData _data;
         private CapsuleCollider2D _cc;
         private SpriteRenderer _sr;
+        private AudioEntity _audio;
         private Text _transitionReason;
         #endregion
 
@@ -23,6 +24,8 @@ namespace StateMachine
         public float coyoteTime = .2f;
         public AnimationClip walkAnimation;
         public AnimationClip slideAnimation;
+        public AudioClip walkSound;
+        public AudioClip slideSound;
         public float runMaxSpeed = 8f; //Target speed we want the player to reach.
         public float runAcceleration = 8f; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
         public float runDecceleration = 0.5f; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0.
@@ -44,6 +47,7 @@ namespace StateMachine
             if (_col == null) _col = parent.GetComponentInChildren<PlatformerController2D>();
             if (_cc == null) _cc = parent.GetComponentInChildren<CapsuleCollider2D>();
             if (_sr == null) _sr = parent.GetComponentInChildren<SpriteRenderer>();
+            if (_audio == null) _audio = parent.audioEntity;
             if (_data == null) _data = parent.PersistentPlayerData;
             if (_transitionReason == null) _transitionReason = parent.StateTransition;
 
@@ -56,9 +60,16 @@ namespace StateMachine
         {
 
             if (Mathf.Abs(Input.GetAxis("Horizontal")) >= xInputTreshold)
+            {
                 _xInput = Mathf.Sign(Input.GetAxis("Horizontal"));
+                _audio.PlayState(walkSound, .7f, false, true);
+            }
             else
+            {
                 _xInput = 0;
+                _audio.PlayState(slideSound, .3f);
+            }
+                
             _dash = Input.GetAxis("Dash");
             _jump = Input.GetButtonDown("Jump");
 

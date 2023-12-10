@@ -18,6 +18,7 @@ MonoBehaviour:
   _rayHeight: 0.05
   timeUntilCheckGround: 0.2
   jumpAnimation: {fileID: 7400000, guid: 5ada3be4a1dfd0d4f8b14f441fcabdd9, type: 2}
+  jumpSound: {fileID: 8300000, guid: cae862d79a232a84d8e47e389bafcc60, type: 3}
   moveMaxSpeed: 6
   moveAcceleration: 2
   moveDecceleration: 0.5

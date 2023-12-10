@@ -15,4 +15,5 @@ MonoBehaviour:
   xInputTreshold: 0.4
   rayHeight: 0.2
   idleAnimation: {fileID: 7400000, guid: 39b2b38dbf983f14cb43c0976a43a1b0, type: 2}
+  idleSound: {fileID: 8300000, guid: 70ffe8fc24407d8478fb14cb887d0110, type: 3}
   selectedInputTreshold: 0

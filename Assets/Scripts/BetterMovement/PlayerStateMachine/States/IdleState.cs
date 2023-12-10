@@ -16,13 +16,14 @@ namespace StateMachine
         private SpriteRenderer _sr;
         private PlayerAnimation _anim;
         private Text _transitionReason;
-
+        private AudioEntity _audio;
         #endregion
 
         [Header("Idle State settings")]
         public float xInputTreshold = .15f;
         public float rayHeight = .1f;
         public AnimationClip idleAnimation;
+        public AudioClip idleSound;
         public float selectedInputTreshold;
 
 
@@ -41,6 +42,7 @@ namespace StateMachine
             if (_cc == null) _cc = parent.GetComponentInChildren<CapsuleCollider2D>();
             if (_rb == null) _rb = parent.GetComponentInChildren<Rigidbody2D>();
             if (_sr == null) _sr = parent.GetComponentInChildren<SpriteRenderer>();
+            if (_audio == null) _audio = parent.audioEntity;
             if (_anim == null) _anim = parent.PlayerAnimation;
             if (_data == null) _data = parent.PersistentPlayerData;
             if (_transitionReason == null) _transitionReason = parent.StateTransition;
@@ -52,6 +54,9 @@ namespace StateMachine
             _data.jumpsLeft = _data.maxJumps;
             _rb.velocity = Vector2.zero;
             _anim.ChangeAnimationState(idleAnimation.name);
+
+            _audio.PlayState(idleSound, .02f, false, true);
+         
         }
 
         public override void CaptureInput()

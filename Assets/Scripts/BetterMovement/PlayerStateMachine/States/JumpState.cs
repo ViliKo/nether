@@ -11,6 +11,7 @@ namespace StateMachine
         private PersistentPlayerData _data;
         private CapsuleCollider2D _cc;
         private SpriteRenderer _sr;
+        private AudioEntity _audio;
 
         #endregion
 
@@ -21,6 +22,7 @@ namespace StateMachine
         public float _rayHeight = .1f;
         public float timeUntilCheckGround = .3f;
         public AnimationClip jumpAnimation;
+        public AudioClip jumpSound;
         public float moveMaxSpeed = 8f; //Target speed we want the player to reach.
         public float moveAcceleration = 8f; //Time (approx.) time we want it to take for the player to accelerate from 0 to the runMaxSpeed.
         public float moveDecceleration = 0.5f; //Time (approx.) we want it to take for the player to accelerate from runMaxSpeed to 0.
@@ -44,12 +46,12 @@ namespace StateMachine
             if (_cc == null) _cc = parent.GetComponentInChildren<CapsuleCollider2D>();
             if (_sr == null) _sr = parent.GetComponentInChildren<SpriteRenderer>();
             if (_data == null) _data = parent.PersistentPlayerData;
-
+            if (_audio == null) _audio = parent.audioEntity;
             #endregion
 
             Reset();
             Jump();
-
+            _audio.PlayState(jumpSound, .4f, true);
         }
 
         public override void CaptureInput() {

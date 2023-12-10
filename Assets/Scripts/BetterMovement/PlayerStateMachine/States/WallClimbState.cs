@@ -66,7 +66,9 @@ namespace StateMachine
         }
 
 
-        public override void Update() {}
+        public override void Update() {
+            Debug.Log("Im currently climbing");
+        }
 
         public override void FixedUpdate() {
             WallClimb();
@@ -99,6 +101,9 @@ namespace StateMachine
 
             if (!(positiveYInput == 0))  // laita se rigidbodyn nopeuteen
             {
+                Debug.Log("Is it climbable: " + isClimbable());
+                Debug.Log("what is the speed: " + _rb.velocity.y);
+
                 if (isClimbable())
                 {
                     _rb.velocity = new Vector2(0, positiveYInput * climbSpeed);

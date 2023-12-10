@@ -12,6 +12,9 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip ambiance;
     private AudioSource layerPlayer;
 
+
+    [SerializeField] private float audioEntityVolume = .5f;
+
     public static AudioManager Instance
     {
         get
@@ -50,7 +53,7 @@ public class AudioManager : MonoBehaviour
     // Dictionary to store the currently playing instances of each AudioClip
     private Dictionary<AudioClip, List<AudioSource>> playingInstances = new Dictionary<AudioClip, List<AudioSource>>();
 
-    public void PlaySound(AudioClip clip, Vector3 initialPosition, int maxConcurrentInstances = 3)
+    public void PlaySound(AudioClip clip, Vector3 initialPosition, int maxConcurrentInstances = 3, float volume = 1)
     {
         if (currentAudioClip == clip) return;
 
@@ -73,6 +76,7 @@ public class AudioManager : MonoBehaviour
         audioObject.transform.position = initialPosition;
 
         AudioSource audioSource = audioObject.AddComponent<AudioSource>();
+        audioSource.volume = volume;
         audioSource.clip = clip;
         audioSource.spatialBlend = 1f; // Set to 1 for 3D spatialization
 
@@ -102,5 +106,44 @@ public class AudioManager : MonoBehaviour
         layerPlayer.clip = clip;
         layerPlayer.loop = true;
         layerPlayer.Play();
+    }
+
+    private List<AudioEntity> audioEntities = new List<AudioEntity>();
+
+    public AudioEntity AddAsAnAudioEntity(GameObject gameObject)
+    {
+        AudioEntity audioEntity = gameObject.AddComponent<AudioEntity>();
+        
+        audioEntity.Initialize(audioEntityVolume);
+        audioEntities.Add(audioEntity);
+        return audioEntity;
+    }
+}
+
+public class AudioEntity : MonoBehaviour
+{
+    private float _audioEntityVolume;
+    private AudioSource audioSource;
+    private string currentClipName;
+
+    // Initialize the audio entity with a shared AudioSource
+    public void Initialize(float volume)
+    {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        _audioEntityVolume = volume;
+        audioSource.spatialBlend = 1f; // Set to 1 for 3D spatialization
+
+    }
+
+    public void PlayState(AudioClip audioClip, float volume, bool overwrite = false, bool isLooping = false)
+    {
+        if (currentClipName == audioClip.name && overwrite == false) return;
+
+        audioSource.clip = audioClip;
+        audioSource.volume = volume * _audioEntityVolume;
+        audioSource.loop = isLooping;
+        audioSource.Play();
+
+        currentClipName = audioClip.name;
     }
 }
