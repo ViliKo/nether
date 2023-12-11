@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 8391437296450693702}
   - component: {fileID: 8391437296450693721}
   - component: {fileID: 8391437296450693720}
+  - component: {fileID: 6339668860821456730}
   m_Layer: 0
   m_Name: rockman
   m_TagString: Enemy
@@ -192,6 +193,7 @@ MonoBehaviour:
   _searchState: {fileID: 11400000, guid: 80d27f4997d792b42864386aa0fc9cae, type: 2}
   _chaseState: {fileID: 0}
   _attackState: {fileID: 11400000, guid: 40560f795d27368409a334bc0a7bbd19, type: 2}
+  audioEntity: {fileID: 0}
 --- !u!61 &8391437296450693721
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -239,3 +241,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &6339668860821456730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8391437296450693698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 945e62a767392754fb5db7091e2ec0cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -47,8 +47,10 @@ namespace Utils.StateMachine {
                 
                 else
                 {
-                    SceneManager.LoadScene("MainMenu");
-                    //transform.position = checkpointManager.GetActiveCheckpointPosition(); //talla tehdaan oikeasti
+                    //SceneManager.LoadScene("MainMenu");
+                    Debug.Log("I m here respawning");
+                    EnemyPoolingManager.Instance.ResetAllEnemiesToInitialState();
+                    transform.position = checkpointManager.GetActiveCheckpointPosition(); //talla tehdaan oikeasti
                 }
                     
 
