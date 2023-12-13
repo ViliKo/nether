@@ -15,6 +15,7 @@ namespace CompositeStateRunner
         private AudioEntity _audio;
         private BoxCollider2D _bc;
         [SerializeField] private AnimationClip idleAnimation;
+        [SerializeField] private AudioClip idleSound;
 
         int layerToIgnore;
 
@@ -28,6 +29,7 @@ namespace CompositeStateRunner
             layerToIgnore = ~LayerMask.GetMask("VisionField");
 
             _anim.ChangeAnimationState(idleAnimation.name);
+            _audio.PlayState(idleSound, .3f, false, true);
         }
         public override void Update(){
             if (_vf.IseePlayer())

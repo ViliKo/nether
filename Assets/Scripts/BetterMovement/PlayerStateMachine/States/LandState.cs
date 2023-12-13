@@ -117,6 +117,8 @@ namespace StateMachine
             _xInput = 0;
             _jump = false;
         }
+
+
     }
 }
 

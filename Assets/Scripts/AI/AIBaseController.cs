@@ -59,28 +59,6 @@ namespace CompositeStateRunner
             SetState(ref _activeState, _attackState);
         }
 
-        //public void SetSearchState()
-        //{
-        //    _activeState?.Exit();
-        //    _activeState = Instantiate(_searchState);
-        //    _activeState?.Init(this);
-        //    _activeState?.Enter();
-        //}
 
-        //public void SetChaseState()
-        //{
-        //    _activeState?.Exit();
-        //    _activeState = Instantiate(_chaseState);
-        //    _activeState?.Init(this);
-        //    _activeState?.Enter();
-        //}
-
-        //public void SetAttackState()
-        //{
-        //    _activeState?.Exit();
-        //    _activeState = Instantiate(_attackState);
-        //    _activeState?.Init(this);
-        //    _activeState?.Enter();
-        //}
     }
 }

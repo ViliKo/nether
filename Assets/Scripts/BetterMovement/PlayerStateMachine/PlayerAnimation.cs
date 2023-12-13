@@ -12,12 +12,24 @@ namespace StateMachine
 
         public PlayerAnimation(Animator animator, Transform transform)
         {
-            _anim = animator;
-            _transform = transform;
+            if (animator != null)
+            {
+                _anim = animator;
+                _transform = transform;
+            }
+            else
+            {
+                Debug.LogWarning("Animator component is null in PlayerAnimation constructor.");
+            }
         }
 
         public void ChangeAnimationState(string newState)
         {
+            if (_anim == null)
+            {
+                Debug.LogError("Animator is null in ChangeAnimationState");
+                return;
+            }
             if (_currentState == newState || _anim == null) return;
 
             _anim.Play(newState);

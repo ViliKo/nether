@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 98ce136d493f40a429ad6dec2cc815f8
   - enabled: 1
+    path: Assets/Scenes/GodPortal2.unity
+    guid: 840792a4f24927e42b09946d029a7703
+  - enabled: 1
     path: Assets/Scenes/LastRise.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

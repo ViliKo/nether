@@ -13,8 +13,14 @@ namespace CompositeStateRunner
 
         public AIAnimation(Animator animator, Transform transform)
         {
-            _anim = animator;
-            _transform = transform;
+            if(animator != null)
+            {
+                _anim = animator;
+                _transform = transform;
+            } else
+            {
+                Debug.LogWarning("Animator component is null in AIAnimation constructor.");
+            }
         }
 
 

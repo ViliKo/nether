@@ -148,5 +148,7 @@ namespace StateMachine
             _coyoteTimer = 0;
             _spiritState = false;
         }
+
+
     }
 }

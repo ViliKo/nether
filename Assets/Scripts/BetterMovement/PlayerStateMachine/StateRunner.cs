@@ -17,6 +17,8 @@ namespace Utils.StateMachine
         private CooldownManager _cooldownManager;
 
 
+
+
         // tama kannattaisi siirtaa muualle loogisesti
         private CharacterMode _currentMode = CharacterMode.Normal;
         private bool _teleportToPrevLocation;
@@ -31,14 +33,25 @@ namespace Utils.StateMachine
         protected virtual void Awake()
         {
 
-            SetState(_states[0].GetType());
+
+  
             _cooldownManager = new CooldownManager();
+
+
             CooldownManager.CooldownStarted += OnCooldownStarted;
 
             _teleportToPrevLocation = false;
             _sr = GetComponent<SpriteRenderer>();
             _baseMaterial = _sr.material;
         }
+
+        protected virtual void Start()
+        {
+ 
+            SetState(_states[0].GetType());
+        }
+
+
 
         private void OnCooldownStarted(Type abilityType, float cooldownTime)
         {
@@ -68,6 +81,7 @@ namespace Utils.StateMachine
 
         public void SetState(Type newStateType, params object[] parameters)
         {
+     
             if (!(_currentMode == CharacterMode.Spirit))
                 prevState = newStateType; // ota edellinen tila talteen, etta moden jalkeen voi palata siihen
 
@@ -146,6 +160,7 @@ namespace Utils.StateMachine
 
         private void OnDisable()
         {
+   
             CooldownManager.CooldownStarted -= OnCooldownStarted;
         }
 

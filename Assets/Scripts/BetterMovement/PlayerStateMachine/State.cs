@@ -25,5 +25,8 @@ namespace StateMachine
             // Tama voidaan ylikirjoittaa tiettyyn tilaan mita parametreja tarvitaankin
         }
 
+   
+
+
     }
 }

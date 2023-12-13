@@ -154,5 +154,7 @@ namespace StateMachine
             _enterSpiritState = false;
 
         }
+
+
     }
 }

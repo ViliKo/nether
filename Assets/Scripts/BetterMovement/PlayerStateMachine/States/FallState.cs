@@ -150,6 +150,9 @@ namespace StateMachine
 
             _rb.gravityScale = _data.baseGravityScale;
         }
+
+
+ 
     }
 }
 

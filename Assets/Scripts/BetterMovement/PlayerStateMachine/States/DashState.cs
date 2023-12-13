@@ -101,6 +101,9 @@ namespace StateMachine
             _isDashing = false;
             _rb.velocity = new Vector2(_rb.velocity.x/3, _rb.velocity.y);
         }
+
+
+
     }
 
 }

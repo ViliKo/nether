@@ -15,6 +15,7 @@ namespace CompositeStateRunner
         private BoxCollider2D _bc;
         [SerializeField] private AnimationClip attackAnimation;
         [SerializeField] private AnimationClip attackSpawnAnimation;
+        [SerializeField] private AudioClip attackSound;
 
         public GameObject lightningPrefab;
 
@@ -27,6 +28,7 @@ namespace CompositeStateRunner
 
 
             _anim.ChangeAnimationState(attackAnimation.name);
+            
         }
 
 
@@ -34,6 +36,7 @@ namespace CompositeStateRunner
         {
             if (_anim.getCurrentAnimationName(attackAnimation.name) && _anim.isAnimationFinished())
             {
+                _audio.PlayState(attackSound, .5f);
                 _anim.ChangeAnimationState(attackSpawnAnimation.name);
 
                 Instantiate(lightningPrefab);

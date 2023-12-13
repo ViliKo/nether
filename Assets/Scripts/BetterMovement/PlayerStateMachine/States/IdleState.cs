@@ -49,6 +49,8 @@ namespace StateMachine
 
             #endregion
 
+            Debug.Log("Im in idle state");
+
             Reset();
 
             _data.jumpsLeft = _data.maxJumps;
@@ -145,11 +147,11 @@ namespace StateMachine
         private bool CheckForWall() => _col.HorizontalRaycastsOriginBottomUp(-_sr.transform.localScale.x, _cc, rayHeight);
 
 
-        
 
-        
 
-        
+
+
+
     }
 
 
