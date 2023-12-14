@@ -20,6 +20,7 @@ namespace CompositeStateRunner
         private BoxCollider2D _bc;
         private SpriteRenderer _sr;
 
+
         public override void Enter()
         {
             if (_anim == null) _anim = _aiController.AIAnimation;
@@ -29,6 +30,7 @@ namespace CompositeStateRunner
             if (_sr == null) _sr = _aiController.GetComponent<SpriteRenderer>();
             if (_audio == null) _audio = _aiController.audioEntity;
 
+            
             _rb.velocity = Vector2.zero;
 
             _audio.PlayState(throwStartSound, 2f);
@@ -43,7 +45,12 @@ namespace CompositeStateRunner
                 // Instantiate the rockPrefab
                 GameObject rock = Instantiate(rockPrefab);
 
+                Debug.Log("What is the position of the player: " + _vf.PosOfPlayer);
+
+
                 // Set the position and rotation in local space
+
+
                 rock.GetComponent<ThrowedRock>().target = _vf.PosOfPlayer;
                 rock.transform.parent = _aiController.transform; // Make it a child of the AI object
                 rock.transform.localPosition = new Vector3(0.2200241f, -0.5887735f, 0f); // Set local position

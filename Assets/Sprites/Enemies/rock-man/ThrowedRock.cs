@@ -59,6 +59,8 @@ public class ThrowedRock : MonoBehaviour
         // Calculate the direction to the target
         Vector2 direction = target - new Vector2(transform.position.x, transform.position.y);
 
+        Debug.Log("target direction. x-vector: " + direction.x + ". y-vector: " + direction.y);
+
 
         // Flip the initial speed if the target is to the left
         float initialSpeedX = (direction.x < 0) ? -throwSpeed : throwSpeed;
@@ -71,6 +73,8 @@ public class ThrowedRock : MonoBehaviour
 
         // Calculate the initial velocity using the projectile motion equations
         float initialSpeedY = (verticalDistance + 0.5f * gravity * Mathf.Pow(horizontalDistance / initialSpeedX, 2)) / (horizontalDistance / initialSpeedX);
+
+        Debug.Log("initial Speed X:" + initialSpeedX + ". Initial Speed Y: " + initialSpeedY);
 
         // Create the initial velocity vector
         Vector2 velocity = new Vector2(initialSpeedX, initialSpeedY);

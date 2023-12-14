@@ -15,7 +15,7 @@ namespace StateMachine
         private CapsuleCollider2D _cc;
         private SpriteRenderer _sr;
         private PlayerAnimation _anim;
-        private Text _transitionReason;
+        
         private AudioEntity _audio;
         #endregion
 
@@ -45,7 +45,7 @@ namespace StateMachine
             if (_audio == null) _audio = parent.audioEntity;
             if (_anim == null) _anim = parent.PlayerAnimation;
             if (_data == null) _data = parent.PersistentPlayerData;
-            if (_transitionReason == null) _transitionReason = parent.StateTransition;
+            
 
             #endregion
 
@@ -110,19 +110,19 @@ namespace StateMachine
         {
 
             if (Mathf.Abs(_xInput) >= 1 && _blockinObstacle == false) {
-                _transitionReason.text = "Idle -> Inputtia on enemman kuin raja on ja ei ole estetta -> Walk";
+
                 _runner.SetState(typeof(WalkState));
             }
 
             if (_jump && _col.VerticalRaycasts(_cc, rayHeight))
             {
-                _transitionReason.text = "Idle -> Painettu hyppya ja raycast osuu maahan -> Jump";
+
                 _runner.SetState(typeof(JumpState));
             }
                 
             if (!_col.VerticalRaycasts(_cc, rayHeight))
             {
-                _transitionReason.text = "Idle -> Raycast ei osu maahan -> Putoaminen";
+
                 _runner.SetState(typeof(FallState));
             }
 

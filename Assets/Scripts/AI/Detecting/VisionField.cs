@@ -31,7 +31,6 @@ public class VisionField : MonoBehaviour
         if (collision.tag == "Player")
         {
             iSeeThePlayer = false;
-            PosOfPlayer = Vector2.zero;
         }
             
     }

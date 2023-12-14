@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: god-hand-search
   m_EditorClassIdentifier: 
   blowAnimation: {fileID: 7400000, guid: 190aad02cb713f84f9ba899094dbfb6a, type: 2}
-  iSeePlayerAudio: {fileID: 8300000, guid: 07dfb23581120ac42863f6feb6defb1f, type: 3}
+  iSeePlayerAudio: {fileID: 8300000, guid: 3ccb189a4e73ac54f852322fd4ff59f0, type: 3}
   idleAnimation: {fileID: 7400000, guid: 066c21ab3e347884ebb4f5301974aa5b, type: 2}

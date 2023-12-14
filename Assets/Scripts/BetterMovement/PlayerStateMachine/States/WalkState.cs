@@ -49,7 +49,6 @@ namespace StateMachine
             if (_sr == null) _sr = parent.GetComponentInChildren<SpriteRenderer>();
             if (_audio == null) _audio = parent.audioEntity;
             if (_data == null) _data = parent.PersistentPlayerData;
-            if (_transitionReason == null) _transitionReason = parent.StateTransition;
 
             #endregion
             _data.jumpsLeft = _data.maxJumps;
@@ -97,14 +96,12 @@ namespace StateMachine
        
             if (Mathf.Abs(_rb.velocity.x) <= 0.3 && Mathf.Abs(_xInput) < 1)
             {
-                _transitionReason.text = "Kavely -> horisonttaalinen nopeus oli vahemman kuin 0.02 -> Lepo";
                 _runner.SetState(typeof(IdleState));
             }
                 
 
             if (_coyoteTimer < coyoteTime && _jump)
             {
-                _transitionReason.text = "Kavely -> coyote ajastin oli pienempi kuin maaritetty aika ja hyppya on painettu -> Hyppy";
                 _runner.SetState(typeof(JumpState));
             }
                 
@@ -113,16 +110,13 @@ namespace StateMachine
 
             if (!_col.VerticalRaycasts(_cc, rayHeight) && !_jump)
             {
-                _transitionReason.text = "Kavely -> maahan osoittava raycast ei osunut ja ei ole painanut hyppya -> Putoaminen";
                 _runner.SetState(typeof(FallState));
             }
 
 
             if (_dash > dashInputTreshold)
             {
-                _transitionReason.text = "Kavely -> dash nappia painettu -> Dash";
-                _runner.ActivateAbility(typeof(DashState), _data.dashCooldown);
-                
+                _runner.ActivateAbility(typeof(DashState), _data.dashCooldown);   
             }
 
             if (_spiritState && _data.hasSpiritAbility)
