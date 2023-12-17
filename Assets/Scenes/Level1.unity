@@ -16229,7 +16229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scenesToLoad:
   - m_SceneAsset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
-    m_SceneName: LastRise
+    m_SceneName: Level2
   _scenesToUnload: []
 --- !u!1 &1433261038
 GameObject:

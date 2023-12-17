@@ -74,27 +74,32 @@ public class JsonDataService : IDataService
     }
 
 
-    public T LoadData<T>(string RelativePath, bool Encrypted)
+    public T LoadData<T>(string relativePath, bool encrypted)
     {
-        string path = Application.persistentDataPath + RelativePath;
-
-        if (!File.Exists(path))
-        {
-            Debug.LogError($"Cannot load file at {path}. File does not exist!");
-            throw new FileNotFoundException($"{path} does not exist!");
-        }
+        string path = Application.persistentDataPath + relativePath;
 
         try
         {
             T data;
-            if (Encrypted)
+
+            if (File.Exists(path))
             {
-                data = ReadEncryptedData<T>(path);
+                if (encrypted)
+                {
+                    data = ReadEncryptedData<T>(path);
+                }
+                else
+                {
+                    data = JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+                }
             }
             else
             {
-                data = JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+                Debug.LogWarning($"File at {path} does not exist. Creating a new instance.");
+                data = Activator.CreateInstance<T>();
+                SaveData(relativePath, data, encrypted); // Save the default data
             }
+
             return data;
         }
         catch (Exception e)
