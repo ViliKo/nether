@@ -4,28 +4,29 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using Cinemachine;
+using Utils.StateMachine;
+
 public class LevelManager : MonoBehaviour
 {
 
     public string persistentScreenName;
-    public StateManager stateManager;
     public GameObject cameraManagerObject;
 
     private GameObject player;
     private List<Scene> scenes;
     private bool listHasPlayer;
     private CameraManager cameraManager;
-    private CheckpointManager _checkpointManager;
+    public CheckpointManager checkpointManager;
 
 
     //public SceneField checkPointScene;
 
     private void Awake() {
-        _checkpointManager = GameObject.Find("checkpoint-manager").GetComponent<CheckpointManager>();
+        
 
         if (cameraManagerObject != null){
             cameraManager = cameraManagerObject.GetComponent<CameraManager>();
-       }
+        }
     }
 
     private void Start()
@@ -40,7 +41,7 @@ public class LevelManager : MonoBehaviour
      
 
     private void SpawnPlayer(){
-        // ma tekisin tasta paan
+
         GetScenes();
         listHasPlayer = CheckIfPersitenSceneHasLoaded();
 
@@ -71,7 +72,7 @@ public class LevelManager : MonoBehaviour
         {
             player = GameObject.FindWithTag("Player");
             GivePlayerTransformToAllCamerasAtScene(player);
-            SetStartCheckpoint();
+            GivePlayerLevelInformation();
         }
     }
 
@@ -91,11 +92,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void SetStartCheckpoint()
-    {
-        player.transform.position = _checkpointManager.GetActiveCheckpointPosition();
-    }
-
+  
 
     private void GetScenes()
     {
@@ -120,10 +117,11 @@ public class LevelManager : MonoBehaviour
 
     public void SetCheckPointScene()
     {
-        if (GameObject.Find("StateManager"))
-        {
-            //stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
-            //stateManager._checkpointScene = checkPointScene;
-        }
+
+    }
+
+    public void GivePlayerLevelInformation()
+    {
+        player.GetComponent<PlayerRespawn>().checkpointManager = checkpointManager;
     }
 }

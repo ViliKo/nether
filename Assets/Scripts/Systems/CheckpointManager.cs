@@ -6,7 +6,16 @@ public class CheckpointManager : MonoBehaviour
 {
     public List<Transform> checkpoints = new List<Transform>();
     private Transform activeCheckpoint;
-    
+
+
+    private void Start()
+    {
+
+
+        Debug.Log("I found the player");
+        
+
+    }
 
 
     public void ActivateCheckpoint(Transform checkpoint)

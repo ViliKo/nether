@@ -7,7 +7,7 @@ namespace Utils.StateMachine {
     public class PlayerRespawn : MonoBehaviour, IModeObserver
     {
         public PlayerController playerController;
-        private CheckpointManager _checkpointManager;
+        public CheckpointManager checkpointManager;
 
         private CharacterMode characterMode;
         [SerializeField] private float timeUntilRespawn = 4f;
@@ -16,11 +16,10 @@ namespace Utils.StateMachine {
 
 
         private void Start()
-        {
-            _checkpointManager = GameObject.Find("checkpoint-manager").GetComponent<CheckpointManager>();
-            
-            
+        {    
             PlayerController.ModeChanged += ModeChanged;
+
+            //transform.position = checkpointManager.GetActiveCheckpointPosition();
         }
 
         private void Update()
@@ -52,7 +51,7 @@ namespace Utils.StateMachine {
                     //SceneManager.LoadScene("MainMenu");
                     Debug.Log("I m here respawning");
                     EnemyPoolingManager.Instance.ResetAllEnemiesToInitialState();
-                    transform.position = _checkpointManager.GetActiveCheckpointPosition(); //talla tehdaan oikeasti
+                    transform.position = checkpointManager.GetActiveCheckpointPosition(); //talla tehdaan oikeasti
                 }
                     
 

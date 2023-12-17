@@ -9,7 +9,7 @@ public class MainMenuManager : MonoBehaviour
     public void StartGame()
     {
         Debug.Log("Im here");
-        SceneManager.LoadScene("LastRise"); // Replace "GameScene" with your actual game scene name
+        SceneManager.LoadScene("GodPortal2"); // Replace "GameScene" with your actual game scene name
     }
 
     public void QuitGame()
