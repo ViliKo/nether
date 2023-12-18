@@ -8,6 +8,7 @@ public class PlayerState
 {
     public int currentLevel = 0;
 
+
     public List<SaveSlot> saveSlots = new List<SaveSlot>()
     {
         new SaveSlot(), // Slot 1
@@ -16,11 +17,8 @@ public class PlayerState
         new SaveSlot(), // Slot 4
     };
 
+    public PlayerState()
+    {
+    }
 }
 
-[Serializable]
-public class SaveSlot
-{
-    public int currentLevel = 0;
-    // Add more save slot information here
-}

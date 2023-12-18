@@ -77,6 +77,7 @@ public class JsonDataService : IDataService
     public T LoadData<T>(string relativePath, bool encrypted)
     {
         string path = Application.persistentDataPath + relativePath;
+        Debug.Log($"Attempting to load data from file: {path}");
 
         try
         {
@@ -90,16 +91,26 @@ public class JsonDataService : IDataService
                 }
                 else
                 {
-                    data = JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+                    string jsonContent = File.ReadAllText(path);
+
+
+                    //data = JsonConvert.DeserializeObject<T>(jsonContent);
+                    data = JsonUtility.FromJson<T>(jsonContent);
+                    Debug.Log($"Deserialized Object Contents: {JsonUtility.ToJson(data)}");
                 }
             }
             else
             {
                 Debug.LogWarning($"File at {path} does not exist. Creating a new instance.");
-                data = Activator.CreateInstance<T>();
-                SaveData(relativePath, data, encrypted); // Save the default data
+
+                // Don't create a new instance immediately, load the default data from elsewhere
+                T defaultData = GetDefaultData<T>();
+                SaveData(relativePath, defaultData, encrypted);
+
+                return defaultData;
             }
 
+            Debug.Log($"Object Contents: {JsonUtility.ToJson(data)}");
             return data;
         }
         catch (Exception e)
@@ -107,6 +118,13 @@ public class JsonDataService : IDataService
             Debug.LogError($"Failed to load data due to: {e.Message} {e.StackTrace}");
             throw e;
         }
+    }
+
+    private T GetDefaultData<T>()
+    {
+        // You may implement logic to return default data based on the type T
+        // For now, just create a new instance
+        return Activator.CreateInstance<T>();
     }
 
     private T ReadEncryptedData<T>(string Path)
